@@ -3,7 +3,7 @@ import Service from '../models/service.js';
 import Reclamation from '../models/reclamation.js';
 import { validationResult } from 'express-validator';
 validationResult
-export function getAll(req, res) {
+export function getServices(req, res) {
     Service.find({})
     .select("_id libelle ")
     .exec()
@@ -15,24 +15,35 @@ export function getAll(req, res) {
     });
 }
 
-export function addOnce(req, res) {
-    if(validationResult(req).isEmpty()){
-        const service = new Service(req.body);
-        service.save()
-        .then(newservice => {
-            res.status(201).json(newservice);
+
+export function addService(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ error: errors.array() });
+    }
+    Service.findOne({ libelle: req.body.libelle })
+        .then(rec => {
+            if (rec) {
+                return res.status(400).json({ err: "Service existe déjà" });
+            } else {
+                const service = new Service(req.body);
+                service.save()
+                    .then(newService => {
+                        res.status(201).json(newService);
+                    })
+                    .catch(err => {
+                        res.status(500).json({ err: err.message });
+                    });
+            }
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ err: err.message });
         });
-    }else{
-        res.status(400).json({error:validationResult(req).array()})
-    }
-
-    
 }
 
-export function getOnce(req, res) {
+
+
+export function getServiceById(req, res) {
     Service.findById(req.params.id)
     .then(service => {
         res.status(200).json(service);
@@ -41,7 +52,9 @@ export function getOnce(req, res) {
         res.status(500).json(err);
     });
 }
-export function deleteOnce(req, res) {
+
+
+export function deleteService(req, res) {
     Service.findByIdAndDelete(req.params.id)
     .then(service => {
         Reclamation.deleteMany({typeReclamation:service._id})
@@ -57,12 +70,28 @@ export function deleteOnce(req, res) {
 }
 
 
-export function putOnce(req, res) {
-    Service.findByIdAndUpdate(req.params.id, req.body)
-    .then(service => {
-        res.status(200).json(service);
-    })
-    .catch(err => {
-        res.status(500).json(err);
-    });
+export function updateService(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ error: errors.array() });
+    }
+    Service.findOne({ libelle: req.body.libelle })
+        .then(rec => {
+            if (rec) {
+                return res.status(400).json({ err: "Service existe déjà" });
+            } else {
+                Service.findByIdAndUpdate(req.params.id, req.body)
+                .then(service => {
+                    res.status(200).json(service);
+                })
+                .catch(err => {
+                    res.status(500).json(err);
+                });
+            }
+        }).catch(err => {
+            res.status(500).json({ err: err.message });
+        });
+
+
+    
 }

@@ -1,10 +1,11 @@
 import { Schema, model } from "mongoose";
-import Reclamation from "./reclamation.js";
+
 
 const serviceSchema = new Schema({
     libelle: {
         type: String,
-        required: true
+        required: true,
+        unique:true
     }
 }
 );

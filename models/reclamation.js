@@ -9,10 +9,13 @@ const reclamationSchema = new Schema({
         type: String,
         required: true
     },
+    status: {
+        type: Boolean ,
+        default:true,
+    }, 
     etat: {
         type: Boolean ,
         default:false,
-        required: true
     }, 
     email: {
         type:String,
@@ -24,12 +27,16 @@ const reclamationSchema = new Schema({
     }, 
     pieceJointe: {
         type: String,
-        required: true
     },
     typeReclamation: {
         type: Schema.Types.ObjectId,
         ref:'Service',
-        required: true
+        required:true
+    },
+    userReclamation: {
+        type: Schema.Types.ObjectId,
+        ref:'User',
+        required:true
     },
     
 },

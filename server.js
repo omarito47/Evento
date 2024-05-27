@@ -1,8 +1,12 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import { notFoundError, errorHandler } from './middlewares/error-handler.js';
+
 import reclamationRoute from './routes/reclamation.js';
+import userRoute from './routes/user.js';
+import commentRoute from './routes/commentaire.js';
 import serviceRoute from './routes/service.js';
+
 import morgan from 'morgan';
 import cors from 'cors';
 const app = express();
@@ -22,10 +26,12 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use("/img",express.static('public/images'));
+app.use("/doc",express.static('public/documents'));
 
 app.use('/reclamation', reclamationRoute);
 app.use('/service', serviceRoute);
+app.use('/user', userRoute);
+app.use('/comment', commentRoute);
 
 
 app.use(notFoundError);
@@ -34,3 +40,4 @@ app.use(errorHandler);
 app.listen(port, () => {
   console.log(`Server running at http://127.0.0.1:${port}/`);
 });
+

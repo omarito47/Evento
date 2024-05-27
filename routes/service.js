@@ -1,22 +1,22 @@
 import express from 'express';
 
-import { getAll, addOnce, getOnce, putOnce , deleteOnce} from '../controllers/service.js';
+import { getServices, addService, getServiceById, updateService , deleteService} from '../controllers/service.js';
 import { body } from 'express-validator';
-  
+
 const router = express.Router();
 
 router
   .route('/')
-  .get(getAll)
+  .get(getServices)
   .post(
     body('libelle').isLength({min:3,max:15}).isAlpha(),
-    addOnce);
+    addService);
 
 router
   .route('/:id')
-  .get(getOnce)
-  .put(putOnce)
-  .delete(deleteOnce);
+  .get(getServiceById)
+  .put(updateService)
+  .delete(deleteService);
 
   
 export default router;
