@@ -9,6 +9,7 @@ const userSchema = new Schema({
     email: {
         type: String,
         required: true,
+        unique: true
     },
     password: {
         type: String,
@@ -17,12 +18,22 @@ const userSchema = new Schema({
     },
     age: {
         type: Number,
-        required: true
+        required: false
     },
     address: {
         type: String,
         required: true
     },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
+    verificationCode: {
+        type: Number,
+        default: null,
+        required: false
+    },
+
     role: {
         type: String,
         enum: ['admin', 'user'],
