@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'; // Importation de mongoose
 const { Schema, model } = mongoose; // Déstructuration de Schema et model à partir de mongoose
-import TypeEvenement from "./TypeEvenement.js";
+// import TypeEvenement from "./TypeEvenement.js";
+// import Evenement from "./Evenement.js";
 
 
 // Définition du schéma pour le modèle Evenement
@@ -12,15 +13,16 @@ const EvenementSchema = new Schema(
         },
         description: {
             type: String,
-            required: true // La description est requise
+            required: true,
         },
         DateDebut: {
             type: Date,
-            required: true // La date de début est requise
+            required: true,
+
         },
         DateFin: {
             type: Date,
-            required: true // La date de fin est requise
+            required: true,
         },
         heure: {
             type: String,
@@ -30,22 +32,31 @@ const EvenementSchema = new Schema(
             type: String,
             required: true // Le lieu est requis
         },
-        NbreDePlace: {
-            type: Number,
-            required: true // Le nombre de places est requis
-        },
+
         PriceTicket: {
             type: Number,
-            required: true // Le prix du billet est requis
         },
-        typeTypeEvenement : {
+        typeEvent: {
             type: Schema.Types.ObjectId,
-            ref:'Evenement',
-            required: true
+            ref: "categorie" // Le prix du billet est requis
         },
-        
+        nombreParticipant: {
+            type: Number,
+            default: 0
+        },
+
+        image: {
+            type: String,
+            required: false
+        },
+        userEvenement: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            // required:true
+        }
+
     },
-    
+
     {
         timestamps: true // Ajoute les champs createdAt et updatedAt automatiquement
     }

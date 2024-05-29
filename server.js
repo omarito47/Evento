@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import { notFoundError, errorHandler } from './middlewares/error-handler.js';
 import EvenementRoute from './routes/Evenement.js';
 import TypeEvenementRoute from './routes/TypeEvenement.js';
+import ReservationRoute from './routes/reservation.js';
+import userRoute from './routes/User.js';
 import morgan from 'morgan';
 import cors from 'cors';
 const app = express();
@@ -21,11 +23,16 @@ mongoose.connect(`mongodb://127.0.0.1:27017/${database}`)
 app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
+app.use(express.urlencoded({extended:true}));
+app.use("/img",express.static('public/images'));
 
 
 
 app.use('/Evenement', EvenementRoute);
 app.use('/TypeEvenement', TypeEvenementRoute);
+app.use('/reservation', ReservationRoute);
+// app.use('/evenements', EvenementRoute);
+app.use('/User', userRoute);
 app.use("/images", express.static("public/images"));
 
 

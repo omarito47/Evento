@@ -1,6 +1,6 @@
 import { body } from 'express-validator';
 import { Schema, model } from "mongoose"; // Importation de Schema et model depuis mongoose
-import Evenement from "./Evenement.js";
+// import Evenement from "./Evenement.js";
 // Définition du schéma pour le modèle TypeEvenement
 const TypeEvenementSchema = new Schema(
     {
@@ -13,18 +13,9 @@ const TypeEvenementSchema = new Schema(
             required: true // Le libellé est requis
         }
     },
-    
+
 );
 
-TypeEvenementSchema.pre('remove', async function(next) {
-    console.log("hello");
-    try {
-        await TypeEvenement.deleteMany({TypeEvenement:this._id});
-        console.log("hiiii");
-        next(); 
-    } catch (err) {
-        next(err);
-    }
-});
+
 // Exportation du modèle TypeEvenement
 export default model("TypeEvenement", TypeEvenementSchema);

@@ -1,5 +1,6 @@
 import { validationResult } from 'express-validator';
 import TypeEvenement from '../models/TypeEvenement.js';
+import Evenement from '../models/Evenement.js';
 
 
 export function getAll(req, res) {
@@ -15,8 +16,8 @@ export function getAll(req, res) {
 }
 
 export function addOnce(req, res) {
-    const TypeEvenement = new TypeEvenement(req.body);
-    TypeEvenement.save()
+    const typeEvenement = new TypeEvenement(req.body);
+    typeEvenement.save()
         .then(newTypeEvenement => {
             res.status(201).json(newTypeEvenement);
         })
@@ -55,18 +56,60 @@ export function putOnce(req, res) {
         });
 }
 
-export function deleteTypeEvenement(req, res) {
-    const { id } = req.params;
 
-    Evenement.deleteMany({ typeEvenement: id })
-        .then(() => {
-            return TypeEvenement.findByIdAndDelete(id);
+export function delet(req, res) {
+    TypeEvenement.findByIdAndDelete(req.params.id)
+        .then(event => {
+            Evenement.deleteMany({ typeEvent: req.params.id })
+                .then(() => {
+                    res.status(200).json(typeEvent);
+                }).catch(err => {
+                    res.status(500).json(err);
+                });
         })
-        .then(typeEvenement => {
-            if (!typeEvenement) {
-                return res.status(404).json({ message: 'Type d\'événement non trouvé' });
-            }
-            res.status(200).json({ message: 'Type d\'événement supprimé' });
-        })
-        .catch(err => res.status(500).json(err));
+        .catch(err => {
+            res.status(500).json(err);
+        });
 }
+
+
+
+
+
+
+
+// {
+//     "name":"hhhhh",
+//    "description" : "bbbbbb",
+//    "DateDebut" : "11-5-2001",
+//    "DateFin" : "11-6-2002",
+//    "heure" : "11:00",
+//    "lieu" : "11:00",
+//    "NbreDePlace" : "02",
+//    "PriceTicket" : "11"
+
+// }
+// export async function searchEvenement(req, res) {
+
+//     const { categorie, date } = req.query;
+
+//     let searchCriteria = {};
+
+//     if (categorie) {
+//         searchCriteria.categorie = categorie;
+//     }
+
+//     if (date) {
+//         searchCriteria.date = { $gte: new Date(date) };
+//     }
+
+//     try {
+//         const evenements = await Evenement.find(searchCriteria);
+//         res.status(200).json(evenements);
+//     } catch (err) {
+//         res.status(500).json({ error: err.message });
+//     }
+// }
+
+
+

@@ -1,93 +1,76 @@
-
 import Evenement from '../models/Evenement.js';
+// import TypeEvenement from '../models/TypeEvenement.js';
+// import reservation from '../models/reservation.js';
+
+import Event from '../models/Evenement.js';
+
 
 export function getAll(req, res) {
-    Evenement.find({})
-    .select("_id name description heure lieu DateDebut DateFin")
-    .exec()
-    .then(Evenement => {
-        res.status(200).json(Evenement);
-    })
-    .catch(err => {
-        res.status(500).json(err);
-    });
+    Event.find({})
+        .select("_id nom description lieu DateDebut DateFin NombreParticipant priceTicket image ")
+        .exec()
+        .then(Evenement => {
+            res.status(200).json(Evenement);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
 }
-
-//export function addOnce(req, res) {
- //   const Evenement = new Evenement(req.body);
-   // Evenement.save()
-    //    .then(newEvenement => {
-     //       res.status(201).json(newEvenement);
-      //  })
-       // .catch(err => {
-       //     res.status(500).json(err);
-       // });
-//}
 
 export function addOnce(req, res) {
-    const Evenement = new Evenement(req.body);
-    Evenement.save()
-    .then(newEvenement => {
-        res.status(201).json({
-            name: newEvenement.name,
-            description: newEvenement.description,
-            heure: newEvenement.heure,
-            lieu: newEvenement.lieu,
-            DateDebut: newEvenement.DateDebut,
-            DateFin: newEvenement.DateFin,
-
+    const Event = new Evenement(req.body);
+    Event.save()
+        .then(Evenement => {
+            res.status(201).json(Evenement);
+        })
+        .catch(err => {
+            res.status(500).json({ err: err.message });
         });
-    })
-    .catch(err => {
-        res.status(500).json(err);
-    });
 }
 
-
 export function getOnce(req, res) {
-    Evenement.findById(req.params.id)
-    .then(Evenement => {
-        res.status(200).json(Evenement);
-    })
-    .catch(err => {
-        res.status(500).json(err);
-    });
+    Event.findById(req.params.id)
+        .then(Evenement => {
+            res.status(200).json(Evenement);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
 }
 
 export function deleteOnce(req, res) {
-    Evenement.findByIdAndDelete(req.params.id)
-    .then(Evenement => {
-        res.status(200).json(Evenement);
-    })
-    .catch(err => {
-        res.status(500).json(err);
-    });
+    Event.findByIdAndDelete(req.params.id)
+        .then(Evenement => {
+            res.status(200).json(Evenement);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
 }
 
 export function putOnce(req, res) {
-    Evenement.findByIdAndUpdate(req.params.id ,req.body)
-    .then(Evenement => {
-        res.status(200).json(err);
-    })
-    .catch(err => {
-        res.status(500).json(err);
-    });
+    Event.findByIdAndUpdate(req.params.id, req.body)
+        .then(Evenement => {
+            res.status(200).json(Evenement);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
 
-    
+}
 
-
-    // sync function deleteServiceWithEvenements(serviceId) {
-    //     try {
-    //         const service = await Service.findById(serviceId);
-    //         if (service) {
-    //             await service.remove();
-    //             console.log('Service and related Evenements deleted successfully');
-    //         } else {
-    //             console.log('Service not found');
-    //         }
-    //     } catch (err) {
-    //         console.error('Error deleting service and related reclamations:', err);
-    //     }
-    // }
+export async function searchEvenement(req,res){
+    try {
+        let searchedEvenements = await Evenement.find(
+            {
+                "$or":[
+                    {DateDebut:{$regex:req.params.key}},
+                ]
+            }
+        )
+        res.status(200).json(searchedEvenements);
+    } catch (error) {
+        console.log(err);
+    }
 
 }
