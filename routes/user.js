@@ -12,6 +12,7 @@ router.get('/displayAdminUsers',displayAdminUsers);
 router.get('/displayRegularUsers',displayRegularUsers);
 router.post('/signin', signIn);
 router.get("/verify/:userId/:verificationCode", verifyUser);
+
 // Route to send the verification code
 //router.post('/send-verification-code', sendVerificationCode);
 // // verify user email verification

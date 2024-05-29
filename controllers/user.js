@@ -12,6 +12,11 @@ export function signIn(req, res) {
         return res.status(404).json({ error: 'User not found' });
       }
 
+      // Check if the user is verified
+      if (!user.verified) {
+        return res.status(401).json({ error: 'User not verified' });
+      }
+
       // Compare the provided password with the hashed password
       bcrypt.compare(password, user.password, (err, result) => {
         if (err) {
