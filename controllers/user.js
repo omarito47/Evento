@@ -55,7 +55,7 @@ export async function verifyUser(req, res) {
 
     // Update the user's verification status
     user.verified = true;
-    user.verificationCode = ""; // Clear the verification code
+    //user.verificationCode = ""; // Clear the verification code
     await user.save();
 
     res.status(200).json({ message: "User verified successfully" });
@@ -95,7 +95,7 @@ export async function verifyUser(req, res) {
 //     }
 //   });
 
-  
+
 
 // }
 
@@ -113,14 +113,14 @@ export function sendEmail(email, verificationCode) {
     // For example, using Gmail SMTP:
     service: 'Gmail',
     auth: {
-      user: 'omar.taamallah@esprit.tn',
-      pass: 'nqjm xmey urlm eruj'
+      user: 'omartaamallah4@gmail.com',
+      pass: 'xulr xaza rvyd heis'
     }
   });
 
   // Configure the email options
   const mailOptions = {
-    from: 'omar.taamallah@esprit.tn',
+    from: 'omartaamallah4@gmail.com',
     to: email,
     subject: 'Verification Code',
     text: `Your verification code is: ${verificationCode}`
@@ -161,7 +161,7 @@ export function createUser(req, res) {
 
       // Create a new user with the encrypted password
       const user = new User(userData);
-      
+
       // Generate a verification code
       const verificationCode = generateVerificationCode();
 
@@ -185,7 +185,7 @@ export function createUser(req, res) {
 
 
 // Lire tous les utilisateurs
-export function getUsers  (req, res)  {
+export function getUsers(req, res) {
   User.find()
     .then((users) => {
       res.status(200).json(users);
@@ -196,7 +196,7 @@ export function getUsers  (req, res)  {
 };
 
 // Obtenir un utilisateur par son ID
-export function getUserById (req, res)  {
+export function getUserById(req, res) {
   const userId = req.params.id;
 
   User.findById(userId)
@@ -213,25 +213,51 @@ export function getUserById (req, res)  {
 };
 
 // Mettre à jour un utilisateur
-export function updateUser  (req, res)  {
-  const userId = req.params.id;
-  const newData = req.body;
+export async function updateUser(req, res) {
+  try {
+    const userId = req.params.id;
+    const updatedData = req.body;
 
-  User.findByIdAndUpdate(userId, newData, { new: true })
-    .then((user) => {
-      if (user) {
-        res.status(200).json(user);
-      } else {
-        res.status(404).json({ error: 'Utilisateur non trouvé' });
-      }
-    })
-    .catch((error) => {
-      res.status(500).json({ error: error });
-    });
+    const user = await User.findById(userId); // Find the user by ID
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the password is being updated
+    if (updatedData.password) {
+      const password = updatedData.password;
+
+      // Generate a salt to use for hashing
+      const salt = await bcrypt.genSalt(5);
+
+      // Hash the password using the generated salt
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      // Replace the plain password with the hashed password
+      updatedData.password = hashedPassword;
+    }
+
+    // Update other user properties with the updated data
+    user.name = updatedData.name || user.name;
+    user.email = updatedData.email || user.email;
+    user.password = updatedData.password || user.password;
+    user.age = updatedData.age || user.age;
+    user.address = updatedData.address || user.address;
+    user.verified = updatedData.verified || user.verified;
+    user.verificationCode = updatedData.verificationCode || user.verificationCode;
+    user.role = updatedData.role || user.role;
+
+    await user.save(); // Save the updated user
+
+    res.json(user); // Return the updated user
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };
 
 // Supprimer un utilisateur
-export function deleteUser (req, res)  {
+export function deleteUser(req, res) {
   const userId = req.params.id;
 
   User.findByIdAndDelete(userId)
