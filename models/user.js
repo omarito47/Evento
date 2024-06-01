@@ -33,6 +33,10 @@ const userSchema = new Schema({
         default: null,
         required: false
     },
+    phoneNumber:{
+        type: String,
+        required: true,
+    },
 
     role: {
         type: String,

@@ -36,6 +36,7 @@ export function signIn(req, res) {
       res.status(500).json({ error: err });
     });
 }
+// verify user by code methode
 export async function verifyUser(req, res) {
   const { userId, verificationCode } = req.params;
 
@@ -64,42 +65,8 @@ export async function verifyUser(req, res) {
   }
 }
 
-// const sendEmail = async (email) => {
 
-//     const verificationCode = generateVerificationCode();
-
-//     // Create a nodemailer transporter
-//     const transporter = nodemailer.createTransport({
-//       // Set up your email service configuration
-//       // For example, using Gmail SMTP:
-//       service: 'Gmail',
-//       auth: {
-//         user: 'omar.taamallah@esprit.tn',
-//         pass: 'nqjm xmey urlm eruj'
-//       }
-//     });   
-//      // Configure the email options
-//   const mailOptions = {
-//     from: 'omar.taamallah@esprit.tn',
-//     to: email,
-//     subject: 'Verification Code',
-//     text: `Your verification code is: ${verificationCode}`
-//   };
-//   // Send the email
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.log(error);
-//       res.status(500).json({ error: error});
-//     } else {
-//       res.status(200).json({ message: 'Verification code sent successfully' });
-//     }
-//   });
-
-
-
-// }
-
-// Generate a random 5-digit code
+// Generate a random 5-digit code methode
 function generateVerificationCode() {
   return Math.floor(10000 + Math.random() * 90000);
 }
@@ -137,9 +104,25 @@ export function sendEmail(email, verificationCode) {
     }
   });
 }
+//send verification code 
+export async function sendVerificationCode(req, res) {
+  try {
+    // Generate verification code
+    const verificationCode = generateVerificationCode();
 
-// Créer un nouvel utilisateur
+    // Send verification code by email
+    await sendEmail(req.body.email, verificationCode);
 
+    // Return success response
+    res.json({ success: true });
+  } catch (error) {
+    // Return error response
+    res.status(500).json({ error: 'Failed to send verification code.' });
+  }
+
+}
+
+// Sign Up 
 export function createUser(req, res) {
   const userData = req.body;
   const password = userData.password;
@@ -184,7 +167,7 @@ export function createUser(req, res) {
 }
 
 
-// Lire tous les utilisateurs
+// get all users
 export function getUsers(req, res) {
   User.find()
     .then((users) => {
@@ -195,7 +178,7 @@ export function getUsers(req, res) {
     });
 };
 
-// Obtenir un utilisateur par son ID
+// get user by id
 export function getUserById(req, res) {
   const userId = req.params.id;
 
@@ -212,7 +195,7 @@ export function getUserById(req, res) {
     });
 };
 
-// Mettre à jour un utilisateur
+// update user
 export async function updateUser(req, res) {
   try {
     const userId = req.params.id;
@@ -256,7 +239,7 @@ export async function updateUser(req, res) {
   }
 };
 
-// Supprimer un utilisateur
+// delete user by id
 export function deleteUser(req, res) {
   const userId = req.params.id;
 
@@ -272,7 +255,7 @@ export function deleteUser(req, res) {
       res.status(500).json({ error: error });
     });
 };
-// Function to display users with the role 'admin'
+// get all users with admin role
 export async function displayAdminUsers() {
   try {
     const adminUsers = await User.find({ role: 'admin' });
@@ -282,7 +265,7 @@ export async function displayAdminUsers() {
   }
 }
 
-// Function to display users with the role 'user'
+// get users with user role
 export async function displayRegularUsers() {
   try {
     const regularUsers = await User.find({ role: 'user' });

@@ -1,6 +1,6 @@
 import express from 'express'; 
 
-import {signIn,createUser,deleteUser,getUserById,getUsers,updateUser,displayAdminUsers,displayRegularUsers,verifyUser} from "../controllers/user.js"
+import {signIn,createUser,deleteUser,getUserById,getUsers,updateUser,displayAdminUsers,displayRegularUsers,verifyUser,sendVerificationCode} from "../controllers/user.js"
 const router = express.Router();
 
 router.post('/', createUser);
@@ -14,7 +14,7 @@ router.post('/signin', signIn);
 router.get("/verify/:userId/:verificationCode", verifyUser);
 
 // Route to send the verification code
-//router.post('/send-verification-code', sendVerificationCode);
+router.post('/send-verification-code', sendVerificationCode);
 // // verify user email verification
 // router.get("/verify/:id/:token", controller.verifyEmail);
 
