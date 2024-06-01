@@ -11,15 +11,22 @@ router
 
 router
   .route('/:id')
-  .get(getCommentairesByReclamation)
+  // .get(getCommentairesByReclamation)
   .put(updateCommentaire)
   .delete(deleteCommentaire)
+
+router
+.route('/:iduser/:idrec')
+.get(getCommentairesByReclamation)
+
 router
   .route('/:id/valide')
-  .get(satisfaitComment);
+  .patch(satisfaitComment);
 router
   .route('/:id/invalide')
-  .get(nonSatisfaitComment);
+  .patch(nonSatisfaitComment);
+
+  
 
   
 export default router;

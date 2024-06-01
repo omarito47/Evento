@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-async function SendEmail(receiver) {
+async function SendEmail(reclamation,user) {
 
   let transporter = nodemailer.createTransport({
     host: "smtp-relay.brevo.com", //
@@ -16,7 +16,7 @@ async function SendEmail(receiver) {
 
   let info = await transporter.sendMail({
     from: 'Evento <Reclamation@Evento.tn>',
-    to: receiver,
+    to: user.email,
     subject: "About Your Reclamation",
     html: `
     <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -64,7 +64,7 @@ async function SendEmail(receiver) {
 
       </div>
 
-      <span style="padding: 0px; vertical-align: top; letter-spacing: normal; line-height: 28.6px; border-collapse: collapse; font-family: Arial,sans-serif; font-size: 22px; display: block; color: rgb(0, 94, 166); font-weight: bold;">Cher Client,</span><span style="padding: 0px; vertical-align: top; letter-spacing: normal; line-height: 18.2px; border-collapse: collapse; font-size: 14px; font-family: Arial,sans-serif; font-weight: normal; display: block; color: rgb(85, 85, 85);">
+      <span style="padding: 0px; vertical-align: top; letter-spacing: normal; line-height: 28.6px; border-collapse: collapse; font-family: Arial,sans-serif; font-size: 22px; display: block; color: rgb(0, 94, 166); font-weight: bold;">Cher ${user.name},</span><span style="padding: 0px; vertical-align: top; letter-spacing: normal; line-height: 18.2px; border-collapse: collapse; font-size: 14px; font-family: Arial,sans-serif; font-weight: normal; display: block; color: rgb(85, 85, 85);">
       <h1 style="margin: 20px 0px 5px; vertical-align: top; letter-spacing: normal; line-height: 23.4px; border-collapse: collapse; font-family: Arial,sans-serif; font-size: 18px; font-weight: bold; color: rgb(85, 85, 85);">Votre Reclamation a ete bien traiter .</h1>
 
       </span>
@@ -82,7 +82,7 @@ async function SendEmail(receiver) {
                 <tr>
 
                   <td style="margin: 0px; font-family: Arial,sans-serif; font-size: 14px; border-collapse: collapse; line-height: 18.2px; letter-spacing: normal; vertical-align: top;"><span style="padding: 0px; vertical-align: top; letter-spacing: normal; line-height: 18.2px; border-collapse: collapse; font-size: 14px; font-family: Arial,sans-serif; font-weight: normal; color: rgb(85, 85, 85);">
-                  <h2 style="margin: 0px; padding: 15px 10px; vertical-align: top; letter-spacing: normal; border-collapse: collapse; font-family: Arial,sans-serif; font-size: 16px; line-height: 18px; font-weight: normal; text-align: center; color: rgb(85, 85, 85);">Votre Reclamation </h2>
+                  <h2 style="margin: 0px; padding: 15px 10px; vertical-align: top; letter-spacing: normal; border-collapse: collapse; font-family: Arial,sans-serif; font-size: 16px; line-height: 18px; font-weight: normal; text-align: center; color: rgb(85, 85, 85);">${reclamation.title} </h2>
 
                   </span></td>
 
@@ -110,12 +110,12 @@ async function SendEmail(receiver) {
             <br style="color: rgb(86, 86, 86); font-family: Helvetica,Arial,sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
 
             <span style="color: rgb(86, 86, 86); font-family: Helvetica,Arial,sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; background-color: rgb(255, 255, 255); float: none; display: inline ! important;">Therefore
-Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur dicta natus aliquam totam doloribus nemo, amet nostrum veniam itaque. Enim quibusdam incidunt dignissimos voluptates dolore.</span><br style="color: rgb(86, 86, 86); font-family: Helvetica,Arial,sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
+${reclamation.description}.</span><br style="color: rgb(86, 86, 86); font-family: Helvetica,Arial,sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
 
             <br style="color: rgb(86, 86, 86); font-family: Helvetica,Arial,sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px;">
 
             <span style="color: rgb(86, 86, 86); font-family: Helvetica,Arial,sans-serif; font-size: 13px; font-style: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; background-color: rgb(255, 255, 255); float: none; display: inline ! important;">We're always concerned about our customers security so please help us recover your account by following the link below.</span><span style="color: rgb(32, 32, 32); font-size: 16px; font-style: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: left; text-indent: 0px; text-transform: none; white-space: normal; widows: 2; word-spacing: 0px; background-color: rgb(255, 255, 255); float: none; font-family: Helvetica,Arial,sans-serif; display: inline ! important;"></span><br>
-
+            
             </td>
 
           </tr>

@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getReclamations, addReclamation, getReclamationById, UpdateReclamation ,deleteReclamation, fermerReclamation, OuvrireReclamation, traiterReclamation, searchReclamation, getReclamationsFermer, getReclamationsOuvert, getReclamationsSortedByDate  } from '../controllers/reclamation.js';
+import { getReclamations, addReclamation, getReclamationById, UpdateReclamation ,deleteReclamation, fermerReclamation, OuvrireReclamation, traiterReclamation, searchReclamation, getReclamationsFermer, getReclamationsOuvert, getReclamationsSortedByDate, getReclamationsTraiter, getReclamationsNonTraiter  } from '../controllers/reclamation.js';
 import { body } from 'express-validator';
 import multer from '../middlewares/multer-config.js';
 
@@ -37,10 +37,17 @@ router
 router
   .route('/fermer')
   .get(getReclamationsFermer)
+router
+  .route('/traiter')
+  .get(getReclamationsTraiter)
+router
+  .route('/nontraiter')
+  .get(getReclamationsNonTraiter)
 
 router
   .route("/search/:key")
   .get(searchReclamation);
+
 //*************************************************************************** */
 
 //****************** TRAITEMENT OUVRIRE/FERMER RECLAMATION  ******************* 

@@ -43,6 +43,7 @@ export function addService(req, res) {
 
 
 
+
 export function getServiceById(req, res) {
     Service.findById(req.params.id)
     .then(service => {
@@ -91,7 +92,21 @@ export function updateService(req, res) {
         }).catch(err => {
             res.status(500).json({ err: err.message });
         });
+}
+export async function searchService(req,res){
+    try {
+        
+        if(req.params.key){
+            let searchedRServices = await Service.find({libelle:{$regex:req.params.key}})
+            res.status(200).json(searchedRServices);
+        }else {
+            const allServices = await Service.find();
+            return res.status(200).json(allServices);
+        }
 
+    } catch (error) {
+        console.error('Error searching services:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 
-    
 }

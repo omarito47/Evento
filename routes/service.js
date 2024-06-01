@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getServices, addService, getServiceById, updateService , deleteService} from '../controllers/service.js';
+import { getServices, addService, getServiceById, updateService , deleteService, searchService} from '../controllers/service.js';
 import { body } from 'express-validator';
 
 const router = express.Router();
@@ -17,6 +17,8 @@ router
   .get(getServiceById)
   .put(updateService)
   .delete(deleteService);
-
+  router
+  .route('/search/:key')
+  .get(searchService)
   
 export default router;

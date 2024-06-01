@@ -4,12 +4,10 @@ const commentaireSchema = new Schema({
     reclamationComment: {
         type: Schema.Types.ObjectId,
         ref:'Reclamation',
-        required:true
     },
     usercomment: {
         type: Schema.Types.ObjectId,
         ref:'User',
-        required:true
     },
     description: {
         type: String,

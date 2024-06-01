@@ -43,6 +43,7 @@ export function getReclamations(req, res) {
 
 export function addReclamation(req, res) {
     // if(validationResult(req).isEmpty()){
+        console.log(req.body);
         Reclamation.create({
             title:req.body.title,
             description:req.body.description,
@@ -55,10 +56,11 @@ export function addReclamation(req, res) {
     )
         .then(newReclamation => {
             res.status(201).json(newReclamation);
-            SendEmail().catch(err => console.log(err));
+            // SendEmail().catch(err => console.log(err));
         })
         .catch(err => {
             res.status(500).json(err);
+            console.log();
         });
     }
     // else{
@@ -121,7 +123,7 @@ export function traiterReclamation(req, res) {
     .then(reclamation => {
         User.findById(reclamation.userReclamation)
         .then(user =>{
-            SendEmail(user.email)
+            SendEmail(reclamation,user)
             res.status(200).json(user);
             
         })
@@ -138,19 +140,28 @@ export function traiterReclamation(req, res) {
 //************ implimentation des metiers de recherches Pour les Reclamations *************** 
 export async function searchReclamation(req,res){
     try {
-        let searchedReclamations = await Reclamation.find(
-            {
-                "$or":[
-                    {title:{$regex:req.params.key}},
-                    {description:{$regex:req.params.key}},
-                    {email:{$regex:req.params.key}},
-                    {numTelReclamation:{$regex:req.params.key}}
-                ]
-            }
-        )
-        res.status(200).json(searchedReclamations);
+        
+        if(req.params.key){
+            let searchedReclamations = await Reclamation.find(
+                {
+                    "$or":[
+                        {title:{$regex:req.params.key, $options: 'i'}},
+                        {description:{$regex:req.params.key, $options: 'i'}},
+                        {email:{$regex:req.params.key, $options: 'i'}},
+                        {numTelReclamation:{$regex:req.params.key, $options: 'i'}}
+                    ]
+                }
+            )
+            res.status(200).json(searchedReclamations);
+            
+        }else{
+            const allreclamtions = await Service.find();
+            return res.status(200).json(allreclamtions);
+        }
+
     } catch (error) {
-        console.log(err);
+        console.error('Error searching reclamation:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 
 }
@@ -181,6 +192,7 @@ export async function getReclamationsOuvert(req,res){
     }
 
 }
+
 export async function getReclamationsFermer(req,res){
     try {
         let searchedReclamationsByStatus = await Reclamation.find({status:false})
