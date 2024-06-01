@@ -11,8 +11,7 @@ import {
 const router = express.Router();
 
 router.route("/").post(addProductToCart).delete(clearCart);
-
-router.get("/:iduser", getLoggedUserCart);
+router.route("/:userId").get(getLoggedUserCart);
 
 router
   .route("/:itemId")

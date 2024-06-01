@@ -128,14 +128,30 @@ export const removeSpecificCartItem = expressAsyncHandler(
     });
   }
 );
+
 export const getLoggedUserCart = expressAsyncHandler(async (req, res, next) => {
   try {
-    const cart = await Cart.findOne({ user: req.user._id });
+    const userId = req.params.userId;
+
+    if (!userId) {
+      console.error("User ID is not provided in the request.");
+      return next(new ApiError("User ID is required", 400));
+    }
+
+    // Verify user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      console.error(`User not found for ID: ${userId}`);
+      return next(new ApiError(`User not found for ID: ${userId}`, 404));
+    }
+
+    console.log(`Fetching cart for user ID: ${userId}`);
+
+    const cart = await Cart.findOne({ user: userId });
 
     if (!cart) {
-      return next(
-        new ApiError(`Cart not found for user ID: ${req.user._id}`, 404)
-      );
+      console.warn(`Cart not found for user ID: ${userId}`);
+      return next(new ApiError(`Cart not found for user ID: ${userId}`, 404));
     }
 
     res.status(200).json({
@@ -144,13 +160,11 @@ export const getLoggedUserCart = expressAsyncHandler(async (req, res, next) => {
       data: cart,
     });
   } catch (error) {
-    console.error("Error fetching cart for logged-in user:", error);
-    res.status(500).json({
-      status: "error",
-      message: "Internal server error",
-    });
+    console.error("Error fetching cart for user ID:", error);
+    return next(new ApiError("Internal server error", 500));
   }
 });
+
 export const clearCart = expressAsyncHandler(async (req, res, next) => {
   await Cart.findOneAndDelete({ user: req.user._id });
   res.status(204).send();

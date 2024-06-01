@@ -58,7 +58,6 @@ export const getAllProduct = asyncHandler(async (req, res) => {
   // Build query
   const apiFeatures = new ApiFeatures(ProductModel.find(), req.query)
     .filter()
-    .search("Products") // Le paramètre modelName indique qu'il s'agit de produits
     .limitFields()
     .sort()
     .paginate(3);
@@ -71,3 +70,18 @@ export const getAllProduct = asyncHandler(async (req, res) => {
     .status(200)
     .json({ results: products.length, paginationResult, data: products });
 });
+
+export async function searchProduct(req, res) {
+  try {
+    let searchedProduct = await ProductModel.find({
+      $or: [
+        { title: { $regex: req.params.key } },
+        { description: { $regex: req.params.key } },
+      ],
+    });
+    console.log(searchedProduct);
+    res.status(200).json(searchedProduct);
+  } catch (error) {
+    console.log(error);
+  }
+}

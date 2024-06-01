@@ -53,7 +53,6 @@ export default class ApiFeatures {
     }
     return this;
   }
-
   paginate(countDocuments) {
     const page = this.queryString.page * 1 || 1;
     const limit = this.queryString.limit * 1 || 50;

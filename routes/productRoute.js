@@ -12,6 +12,7 @@ import {
   getProduct,
   createProduct,
   updateProduct,
+  searchProduct,
   deleteProduct,
 } from "../controllers/productControllers.js";
 
@@ -21,7 +22,7 @@ router
   .route("/")
   .get(getAllProduct)
   .post(createProductValidator, createProduct);
-
+router.route("/search/:key").get(searchProduct);
 router
   .route("/:id")
   .get(getProductValidator, getProduct)
