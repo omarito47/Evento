@@ -24,14 +24,15 @@ app.use(cors());
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-app.use("/img",express.static('public/images'));
+// app.use("/img",express.static('public/images'));
+app.use('/public/images', express.static('public/images'));
 
 
 
 app.use('/Evenement', EvenementRoute);
 app.use('/TypeEvenement', TypeEvenementRoute);
 app.use('/reservation', ReservationRoute);
-// app.use('/evenements', EvenementRoute);
+app.use('/evenements', EvenementRoute);
 app.use('/User', userRoute);
 app.use("/images", express.static("public/images"));
 

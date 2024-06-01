@@ -1,7 +1,6 @@
 import { body } from 'express-validator';
 import { Schema, model } from "mongoose"; // Importation de Schema et model depuis mongoose
-// import Evenement from "./Evenement.js";
-// Définition du schéma pour le modèle TypeEvenement
+
 const TypeEvenementSchema = new Schema(
     {
         name: {
@@ -11,11 +10,17 @@ const TypeEvenementSchema = new Schema(
         libele: {
             type: String,
             required: true // Le libellé est requis
-        }
-    },
+        },
+        
+
+        },
 
 );
-
-
+TypeEvenementSchema.pre('remove', function(next) {
+    // `this` est l'instance de TypeEvenement
+    Evenement.deleteMany({ typeEvent: this._id })
+        .then(() => next())
+        .catch(err => next(err));
+});
 // Exportation du modèle TypeEvenement
 export default model("TypeEvenement", TypeEvenementSchema);

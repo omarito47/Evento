@@ -3,27 +3,36 @@ import { Schema, model } from "mongoose"; // Importation de Schema et model depu
 
 
 const reservationSchema = new Schema(
-    {
-    
-    client: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        // required: true
+  {
+    client_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true
     },
+    evenement_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Evenement',
+      required: true
+    },
+
+
     TypeRes: {
-        type: Schema.Types.ObjectId,
-        ref: "reserver" 
+      type: Schema.Types.ObjectId,
+      ref: "reserver"
     },
     etat: {
-        type: String,
-        enum: ['en attente', 'confirmée', 'annulée'],
-        default: 'en attente'
-      }
-      
-},
-{
-    timestamps:true
-}
+      type: String,
+      enum: ['en attente', 'confirmée', 'annulée'],
+      default: 'en attente'
+    }
+    
+  },
+  {
+    timestamps: true
+  }
 );
 
-export default model("reservation", reservationSchema);
+
+const Reservation = mongoose.model('reservation', reservationSchema);
+
+export default Reservation;

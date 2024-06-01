@@ -1,6 +1,7 @@
 import { validationResult } from 'express-validator';
 import TypeEvenement from '../models/TypeEvenement.js';
 import Evenement from '../models/Evenement.js';
+import Event from '../models/Evenement.js';
 
 
 export function getAll(req, res) {
@@ -57,59 +58,50 @@ export function putOnce(req, res) {
 }
 
 
-export function delet(req, res) {
-    TypeEvenement.findByIdAndDelete(req.params.id)
-        .then(event => {
+
+
+// export function delet(req, res) {
+//     TypeEvenement.findById(req.params.id)
+//         .then(typeEvent => {
+//             if (!typeEvent) {
+//                 return res.status(404).json({ message: 'TypeEvenement not found' });
+//             }
+//             typeEvent.remove()
+//                 .then(() => {
+//                     res.status(200).json({ message: 'TypeEvenement and related Evenements deleted successfully' });
+//                 })
+//                 .catch(err => {
+//                     res.status(500).json({ message: 'Error deleting TypeEvenement', error: err });
+//                 });
+//         })
+//         .catch(err => {
+//             res.status(500).json({ message: 'Error finding TypeEvenement', error: err });
+//         });
+// }
+
+export function deleteTypeEvenement(req, res) {
+    TypeEvenement.findById(req.params.id)
+        .then(typeEvent => {
+            if (!typeEvent) {
+                return res.status(404).json({ message: 'TypeEvenement not found' });
+            }
+            // Supprimer les événements liés avant de supprimer le type d'événement
             Evenement.deleteMany({ typeEvent: req.params.id })
                 .then(() => {
-                    res.status(200).json(typeEvent);
-                }).catch(err => {
-                    res.status(500).json(err);
+                    // Supprimer le type d'événement
+                    typeEvent.remove()
+                        .then(() => {
+                            res.status(200).json({ message: 'TypeEvenement and related Evenements deleted successfully' });
+                        })
+                        .catch(err => {
+                            res.status(500).json({ message: 'Error deleting TypeEvenement', error: err });
+                        });
+                })
+                .catch(err => {
+                    res.status(500).json({ message: 'TypeEvenement and related Evenements deleted successfully', });
                 });
         })
         .catch(err => {
-            res.status(500).json(err);
+            res.status(500).json({ message: 'Error finding TypeEvenement', error: err });
         });
 }
-
-
-
-
-
-
-
-// {
-//     "name":"hhhhh",
-//    "description" : "bbbbbb",
-//    "DateDebut" : "11-5-2001",
-//    "DateFin" : "11-6-2002",
-//    "heure" : "11:00",
-//    "lieu" : "11:00",
-//    "NbreDePlace" : "02",
-//    "PriceTicket" : "11"
-
-// }
-// export async function searchEvenement(req, res) {
-
-//     const { categorie, date } = req.query;
-
-//     let searchCriteria = {};
-
-//     if (categorie) {
-//         searchCriteria.categorie = categorie;
-//     }
-
-//     if (date) {
-//         searchCriteria.date = { $gte: new Date(date) };
-//     }
-
-//     try {
-//         const evenements = await Evenement.find(searchCriteria);
-//         res.status(200).json(evenements);
-//     } catch (err) {
-//         res.status(500).json({ error: err.message });
-//     }
-// }
-
-
-

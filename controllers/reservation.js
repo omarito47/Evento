@@ -1,4 +1,5 @@
 import Evenement from '../models/Evenement.js';
+import Reservation from '../models/reservation.js';
 import reservation from '../models/reservation.js';
 import { validationResult } from 'express-validator';
 validationResult
@@ -36,6 +37,17 @@ export function getReservationById(req, res) {
         res.status(500).json(err);
     });
 }
+export function putOnceReservation(req, res) {
+    reservation.findByIdAndUpdate(req.params.id, req.body)
+        .then(reservation => {
+            res.status(200).json(reservation);
+        })
+        .catch(err => {
+            res.status(500).json(err);
+        });
+}
+
+
 
 export function deleteReservation(req, res) {
     reservation.findByIdAndDelete(req.params.id)
@@ -66,40 +78,30 @@ export function res(req, res) {
         res.status(500).json(err);
     });
 }
+export function filterReservationsByStatus(req, res) {
+    const { status } = req.params;
 
+    Reservation.find({ etat: status })
+        .then(reservations => {
+            res.status(200).json({ reservations });
+        })
+        .catch(err => {
+            res.status(500).json({ message: 'Error filtering reservations', error: err });
+        });
+}
 
-
-// export async function addReservation(req, res) {
-//   try {
-//     const { client, evenement, nombreParticipant } = req.body;
-
-//     // Decrement the number of places available for the event
-//     const event = await Evenement.findById(evenement);
-//     if (!event) {
-//       return res.status(404).json({ message: 'Event not found' });
-//     }
-
-//     if (event.NbreDePlace < nombreParticipant) {
-//       return res.status(400).json({ message: 'Not enough places available' });
-//     }
-
-//     event.NbreDePlace -= nombreParticipant;
-//     await event.save();
-
-//     // Create a new reservation
-//     const reservation = new reservation({ client, evenement, nombreParticipant });
-//     const newReservation = await reservation.save();
-
-//     res.status(201).json(newReservation);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// }
-
-
-
-
-       
-
+// Fonction pour obtenir l'historique des réservations
+export async function getReservationHistory(req, res) {
+    try {
+      const reservation = await Reservation.findById(req.params.id);
+      if (!reservation) {
+        return res.status(404).json({ error: 'Reservation not found' });
+      }
+  
+      res.status(200).json(reservation.history);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  }
 
 
