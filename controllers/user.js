@@ -1,6 +1,8 @@
 import User from '../models/user.js';
 import bcrypt from 'bcrypt';
 import nodemailer from 'nodemailer';
+import jwt from 'jsonwebtoken';
+
 //sign in methode 
 export function signIn(req, res) {
   const { email, password } = req.body;
@@ -25,7 +27,13 @@ export function signIn(req, res) {
 
         if (result) {
           // Passwords match, user is authenticated
-          return res.status(200).json({ message: 'Authentication successful' });
+          const token = jwt.sign({ userId: user._id }, 'yourSecretKey'); // Generate the token
+
+          // Save the token in the user's document
+          user.token = token;
+          user.save();
+
+          return res.status(200).json({ email: user.email, token: token });
         } else {
           // Passwords do not match, authentication failed
           return res.status(401).json({ error: 'Authentication failed' });
@@ -170,13 +178,33 @@ export function createUser(req, res) {
 // get all users
 export function getUsers(req, res) {
   User.find()
-    .then((users) => {
+    .then(users => {
       res.status(200).json(users);
     })
-    .catch((error) => {
+    .catch(error => {
       res.status(500).json({ error: error });
     });
-};
+}
+
+// Middleware for token authorization
+export function authenticateToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1]; // Extract the token from the Authorization header
+
+  if (token == null) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  jwt.verify(token, 'yourSecretKey', (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: 'Invalid token' });
+    }
+
+    // Token is valid, set the user on the request object
+    req.user = user;
+    next(); // Proceed to the next middleware or route handler
+  });
+}
 
 // get user by id
 export function getUserById(req, res) {
