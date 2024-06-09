@@ -56,8 +56,8 @@ export function getOnce(req, res) {
  */
 export function putOnce(req, res) {
     Salle.findByIdAndUpdate(req.params.id, req.body , { new: true })
-    .then(salle => {
-        res.status(200).json(salle);
+    .then(doc => {
+        res.status(200).json(doc);
     })
     .catch(err => {
         res.status(500).json({ error: err });

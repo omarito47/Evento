@@ -1,5 +1,5 @@
 import express from 'express';
-import {addRating,deleteRating,getRatingsBySalle} from '../controllers/rating.js';
+import {addRating,deleteRating,getRatingsBySalle,getAll} from '../controllers/rating.js';
 
 
 
@@ -9,6 +9,6 @@ router.post('/',addRating);
 router.delete('/:id',deleteRating);
 router.get('/:idSalle',getRatingsBySalle);
 //   .put(putOnce)
-     
+router.get('/',getAll);    
 
 export default router;

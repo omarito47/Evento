@@ -3,7 +3,15 @@
 import Salle from '../models/salle.js';
 import Rating from '../models/Rating.js';
 
-
+export function getAll(req, res) {
+    Rating.find({})
+    .then(rating => {
+        res.status(200).json(rating);
+    })
+    .catch(err => {
+        res.status(500).json({ error: err });
+    });
+}
 
 export const addRating = async (req, res) => {
     const { idSalle, idUser, ratingValue } = req.body;

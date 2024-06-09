@@ -1,6 +1,6 @@
 import User from '../models/user.js';
 import ReservationSalle from '../models/reservationSalle.js';
-
+import Rating from '../models/Rating.js';
 
 //sign in methode 
 export function signin(req, res) {
@@ -99,15 +99,23 @@ export function deleteUser (req, res)  {
   User.findByIdAndDelete(userId)
     .then((user) => {
       if (user) {
-        res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
-      } else {
-        res.status(404).json({ error: 'Utilisateur non trouvé' });
+       return res.status(404).json({ error: 'Utilisateur non trouvé' });
       }
-    })
-    .catch((error) => {
-      res.status(500).json({ error: error });
-    });
-};
+ // Supprimer les réservations associées
+ return ReservationSalle.deleteMany({ idUser: userId })
+ .then(() => {
+   // Supprimer les évaluations associées
+   return Rating.deleteMany({ idUser: userId });
+ })
+ .then(() => {
+   res.status(200).json({ message: 'Utilisateur, ses réservations et évaluations supprimés avec succès' });
+ });
+})
+.catch((error) => {
+res.status(500).json({ error: error.message });
+});
+}
+
 // Function to display users with the role 'admin'
 export async function displayAdminUsers() {
   try {
