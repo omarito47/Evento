@@ -1,5 +1,7 @@
 
+import { sendEmailReclamation } from '../middlewares/ReclamationEmail.js';
 import Reclamation from '../models/reclamation.js';
+import User from '../models/user.js';
 
 export function getReclamations(req, res) {
     Reclamation.find({})
@@ -114,6 +116,12 @@ export function traiterReclamation(req, res) {
     Reclamation.findByIdAndUpdate(req.params.id,{etat:true},{new:true})
     .then(reclamation => {
         res.status(200).json(reclamation);
+        User.findById(reclamation.userReclamation)
+        .then(user => {
+            sendEmailReclamation(reclamation,user)
+        }).catch(err => {
+            res.status(500).json(err);
+        });
     })
     .catch(err => {
         res.status(500).json(err);

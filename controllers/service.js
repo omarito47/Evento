@@ -1,4 +1,5 @@
 
+import Reclamation from '../models/reclamation.js';
 import Service from '../models/service.js';
 
 export function getServices(req, res) {
@@ -34,7 +35,12 @@ export function getService(req, res) {
 export function DeleteService(req, res) {
     Service.findByIdAndDelete(req.params.id)
     .then(service => {
-        res.status(200).json(service);
+        Reclamation.deleteMany({typeReclamation:service._id})
+        .then(recs => {
+            res.status(200).json(service);
+        }).catch(err => {
+            res.status(500).json(err);
+        });
     })
     .catch(err => {
         res.status(500).json(err);

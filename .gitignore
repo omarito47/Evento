@@ -1,5 +1,6 @@
 node_modules
 server.js
+.gitignore
 ./controllers/user.js
 ./routes/user.js
 ./models/user.js
