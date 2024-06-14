@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "../middlewares/multer-config.js";
 
 import {
   getProductValidator,
@@ -21,7 +22,7 @@ const router = express.Router();
 router
   .route("/")
   .get(getAllProduct)
-  .post(createProductValidator, createProduct);
+  .post(multer, createProductValidator, createProduct);
 router.route("/search/:key").get(searchProduct);
 router
   .route("/:id")

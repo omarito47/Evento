@@ -26,6 +26,7 @@ app.use(express.json()); // Parse JSON request bodies
 app.use(morgan("dev")); // Logger middleware
 app.use(cors()); // CORS middleware
 
+app.use("/img", express.static("public/images"));
 // Routes
 app.use("/categories", routeCategory);
 app.use("/products", routeProduct);

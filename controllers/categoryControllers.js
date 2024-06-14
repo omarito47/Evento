@@ -62,7 +62,11 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
 });
 
 export const createCategory = asyncHandler(async (req, res) => {
-  const newDoc = await CategoryModel.create(req.body);
+  const newDoc = await CategoryModel.create({
+    ...req.body,
+    image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`,
+  });
+  console.log("req", req.file);
   res.status(201).json({ data: newDoc });
 });
 

@@ -1,4 +1,5 @@
 import express from "express";
+import multer from "../middlewares/multer-config.js";
 
 import {
   getCategoryValidator,
@@ -20,7 +21,7 @@ const router = express.Router();
 router
   .route("/")
   .get(getAllCategory)
-  .post(createCategoryValidator, createCategory);
+  .post(multer, createCategoryValidator, createCategory);
 
 router
   .route("/:id")

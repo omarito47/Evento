@@ -25,10 +25,6 @@ export const createProductValidator = [
     .withMessage("Product price is required")
     .isNumeric()
     .withMessage("Product price must be a number"),
-  check("images")
-    .optional()
-    .isArray()
-    .withMessage("images should be array of string"),
   check("category")
     .notEmpty()
     .withMessage("Product must belong to a category")

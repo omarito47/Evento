@@ -37,7 +37,10 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
 });
 
 export const createProduct = asyncHandler(async (req, res) => {
-  const newDoc = await ProductModel.create(req.body);
+  const newDoc = await ProductModel.create({
+    ...req.body,
+    image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`,
+  });
   res.status(201).json({ data: newDoc });
 });
 
