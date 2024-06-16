@@ -128,3 +128,55 @@ export function traiterReclamation(req, res) {
     });
 
 }
+
+
+// Function to get monthly reclamation count and percentage
+export async function getReclamationStats(req, res) {
+    try {
+        const reclamations = await Reclamation.aggregate([
+            {
+                $group: {
+                    _id: { $month: "$createdAt" },
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $project: {
+                    month: "$_id",
+                    count: 1,
+                    percentage: { $multiply: [{ $divide: ["$count", { $sum: "$count" }] }, 100] }
+                }
+            }
+        ]);
+
+        const services = await Reclamation.aggregate([
+            {
+                $group: {
+                    _id: "$typeReclamation",
+                    count: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: "services", // make sure this matches your Service collection name
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "service"
+                }
+            },
+            {
+                $unwind: "$service"
+            },
+            {
+                $project: {
+                    serviceName: "$service.libelle",
+                    count: 1
+                }
+            }
+        ]);
+
+        res.status(200).json({ monthlyStats: reclamations, serviceStats: services });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}

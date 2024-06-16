@@ -1,7 +1,7 @@
 import express from 'express';
 import multer from "../middlewares/multer-config-reclamation.js";
 
-import { getReclamation, addReclamation, getReclamations, updateReclamation ,deleteReclamation, searchReclamation, ouvrireReclamation, traiterReclamation, fermerReclamation } from '../controllers/reclamation.js';
+import { getReclamation, addReclamation, getReclamations, updateReclamation ,deleteReclamation, searchReclamation, ouvrireReclamation, traiterReclamation, fermerReclamation, getReclamationStats } from '../controllers/reclamation.js';
   
 
 
@@ -37,6 +37,8 @@ router
 router
   .route('/:id/fermer')
   .patch(fermerReclamation)
+
+router.get('/stats', getReclamationStats);
 
   
   
