@@ -27,7 +27,7 @@ router.route("/search/:key").get(searchProduct);
 router
   .route("/:id")
   .get(getProductValidator, getProduct)
-  .put(updateProductValidator, updateProduct)
+  .put(multer, updateProductValidator, updateProduct)
   .delete(deleteProductValidator, deleteProduct);
 
 export default router;

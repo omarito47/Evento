@@ -8,6 +8,7 @@ export default class ApiFeatures {
     const queryStringObj = { ...this.queryString };
     const excludesFields = ["page", "sort", "limit", "fields"];
     excludesFields.forEach((field) => delete queryStringObj[field]);
+
     // Apply filtration using [gte, gt, lte, lt]
     let queryStr = JSON.stringify(queryStringObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
@@ -22,7 +23,7 @@ export default class ApiFeatures {
       const sortBy = this.queryString.sort.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.sort(sortBy);
     } else {
-      this.mongooseQuery = this.mongooseQuery.sort("-createAt");
+      this.mongooseQuery = this.mongooseQuery.sort("-createdAt"); // Adjust to your actual createdAt field
     }
     return this;
   }
@@ -53,31 +54,13 @@ export default class ApiFeatures {
     }
     return this;
   }
-  paginate(countDocuments) {
-    const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 50;
-    const skip = (page - 1) * limit;
-    const endIndex = page * limit;
 
-    // Pagination result
-    const pagination = {};
-    pagination.currentPage = page;
-    pagination.limit = limit;
-    pagination.numberOfPages = Math.ceil(countDocuments / limit);
-
-    // next page
-    if (endIndex < countDocuments) {
-      pagination.next = page + 1;
-    }
-    if (skip > 0) {
-      pagination.prev = page - 1;
-    }
+  paginate() {
+    const page = parseInt(this.queryString.page) || 1; // Current page (default: 1)
+    const limit = parseInt(this.queryString.limit) || 10; // Products per page (default: 10)
+    const skip = (page - 1) * limit; // Items to skip for pagination
 
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
-
-    // Assign paginationResult property
-    this.paginationResult = pagination;
-
     return this;
   }
 }

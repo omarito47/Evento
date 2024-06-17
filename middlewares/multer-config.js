@@ -15,7 +15,6 @@ export default multer({
     // Configurer l'emplacement de stockage
     destination: (req, file, callback) => {
       const __dirname = dirname(fileURLToPath(import.meta.url)); // Récupérer le chemain du dossier courant
-      console.log(__dirname);
       callback(null, join(__dirname, "../public/images")); // Indiquer l'emplacement de stockage
     },
     // Configurer le nom avec lequel le fichier va etre enregistrer
@@ -24,6 +23,7 @@ export default multer({
       const name = file.originalname.split(" ").join("_");
       // Récupérer l'extension à utiliser pour le fichier
       const extension = MIME_TYPES[file.mimetype];
+      console.info("image11111***", name);
       //  Ajouter un timestamp Date.now() au nom de fichier
       callback(null, name + Date.now() + "." + extension);
     },

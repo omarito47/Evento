@@ -20,7 +20,10 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
 
   const document = await ProductModel.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    {
+      ...req.body,
+      image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`,
+    },
     {
       new: true,
     }
@@ -56,22 +59,30 @@ export const getProduct = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: document });
 });
 
-// productController.js
 export const getAllProduct = asyncHandler(async (req, res) => {
   // Build query
   const apiFeatures = new ApiFeatures(ProductModel.find(), req.query)
     .filter()
     .limitFields()
     .sort()
-    .paginate(3);
+    .paginate();
 
-  // Exécution de la requête
-  const { mongooseQuery, paginationResult } = apiFeatures;
+  // Execute query
+  const { mongooseQuery } = apiFeatures;
   const products = await mongooseQuery;
 
-  res
-    .status(200)
-    .json({ results: products.length, paginationResult, data: products });
+  // Calculate total number of items for pagination
+  const totalItems = await ProductModel.countDocuments();
+
+  // Return response with pagination information
+  res.status(200).json({
+    results: products.length,
+    paginationResult: {
+      totalItems,
+      numberOfPages: Math.ceil(totalItems / apiFeatures.queryString.limit),
+    },
+    data: products,
+  });
 });
 
 export async function searchProduct(req, res) {

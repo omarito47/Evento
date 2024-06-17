@@ -26,7 +26,7 @@ router
 router
   .route("/:id")
   .get(getCategoryValidator, getCategory)
-  .put(updateCategoryValidator, updateCategory)
+  .put(multer, updateCategoryValidator, updateCategory)
   .delete(deleteCategoryValidator, deleteCategory);
 
 export default router;

@@ -12,7 +12,7 @@ import {
 router.post("/:cartId", createOrder);
 router.get("/", findAllOrders);
 router.get("/:id", findSpecificOrder);
-router.put("/:id", cancelOrder); // Route for canceling an order
+router.put("cancelorder/:id", cancelOrder); // Route for canceling an order
 
 router.put("/:id", updateOrder);
 

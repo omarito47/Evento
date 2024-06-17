@@ -45,7 +45,12 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
 
   const document = await CategoryModel.findByIdAndUpdate(
     req.params.id,
-    req.body,
+    {
+      ...req.body,
+      image: req.file
+        ? `${req.protocol}://${req.get("host")}/img/${req.file.filename}`
+        : undefined,
+    },
     {
       new: true,
     }
@@ -64,7 +69,9 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
 export const createCategory = asyncHandler(async (req, res) => {
   const newDoc = await CategoryModel.create({
     ...req.body,
-    image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`,
+    image: req.file
+      ? `${req.protocol}://${req.get("host")}/img/${req.file.filename}`
+      : undefined,
   });
   console.log("req", req.file);
   res.status(201).json({ data: newDoc });
