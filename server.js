@@ -8,7 +8,7 @@ import dbConnection from "./config/database.js";
 import ApiError from "./utils/apiError.js";
 import routeCategory from "./routes/CategoryRoute.js";
 import routeProduct from "./routes/productRoute.js";
-import routeOrder from "./routes/orderRoute.js";
+import routerOrder from "./routes/order.js";
 import userRoutes from "./routes/user.js";
 import cartRoutes from "./routes/cartRoute.js";
 
@@ -30,7 +30,8 @@ app.use("/img", express.static("public/images"));
 // Routes
 app.use("/categories", routeCategory);
 app.use("/products", routeProduct);
-app.use("/orders", routeOrder);
+// app.use("/orders", routeOrder);
+app.use("/orders", routerOrder);
 app.use("/user", userRoutes);
 app.use("/cart", cartRoutes);
 

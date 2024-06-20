@@ -7,19 +7,11 @@ const orderSchema = new mongoose.Schema(
       ref: "User",
       required: [true, "Order must belong to a user"],
     },
-    cartItems: [
-      {
-        product: {
-          type: mongoose.Schema.ObjectId,
-          ref: "Product",
-        },
-        quantity: {
-          type: Number,
-          default: 1,
-        },
-        price: Number,
-      },
-    ],
+    cartItem: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Cart",
+      required: [true, "Order must have cart item"],
+    },
     address: {
       details: String,
       phone: String,

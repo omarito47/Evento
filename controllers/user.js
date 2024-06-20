@@ -1,20 +1,22 @@
-import User from '../models/user.js';
-import bcrypt from 'bcrypt';
-import nodemailer from 'nodemailer';
-//sign in methode 
+import User from "../models/user.js";
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
+
+//sign in methode
 export function signIn(req, res) {
   const { email, password } = req.body;
 
   // Find the user by email in the database
   User.findOne({ email })
-    .then(user => {
+    .then((user) => {
       if (!user) {
-        return res.status(404).json({ error: 'User not found' });
+        return res.status(404).json({ error: "User not found" });
       }
 
       // Check if the user is verified
       if (!user.verified) {
-        return res.status(401).json({ error: 'User not verified' });
+        return res.status(401).json({ error: "User not verified" });
       }
 
       // Compare the provided password with the hashed password
@@ -25,17 +27,24 @@ export function signIn(req, res) {
 
         if (result) {
           // Passwords match, user is authenticated
-          return res.status(200).json({ message: 'Authentication successful' });
+          const token = jwt.sign({ userId: user._id }, "yourSecretKey"); // Generate the token
+
+          // Save the token in the user's document
+          user.token = token;
+          user.save();
+
+          return res.status(200).json({ email: user.email, token: token });
         } else {
           // Passwords do not match, authentication failed
-          return res.status(401).json({ error: 'Authentication failed' });
+          return res.status(401).json({ error: "Authentication failed" });
         }
       });
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).json({ error: err });
     });
 }
+// verify user by code methode
 export async function verifyUser(req, res) {
   const { userId, verificationCode } = req.params;
 
@@ -64,66 +73,30 @@ export async function verifyUser(req, res) {
   }
 }
 
-// const sendEmail = async (email) => {
-
-//     const verificationCode = generateVerificationCode();
-
-//     // Create a nodemailer transporter
-//     const transporter = nodemailer.createTransport({
-//       // Set up your email service configuration
-//       // For example, using Gmail SMTP:
-//       service: 'Gmail',
-//       auth: {
-//         user: 'omar.taamallah@esprit.tn',
-//         pass: 'nqjm xmey urlm eruj'
-//       }
-//     });   
-//      // Configure the email options
-//   const mailOptions = {
-//     from: 'omar.taamallah@esprit.tn',
-//     to: email,
-//     subject: 'Verification Code',
-//     text: `Your verification code is: ${verificationCode}`
-//   };
-//   // Send the email
-//   transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.log(error);
-//       res.status(500).json({ error: error});
-//     } else {
-//       res.status(200).json({ message: 'Verification code sent successfully' });
-//     }
-//   });
-
-
-
-// }
-
-// Generate a random 5-digit code
+// Generate a random 5-digit code methode
 function generateVerificationCode() {
   return Math.floor(10000 + Math.random() * 90000);
 }
 
-
-// send email with verification code 
+// send email with verification code
 export function sendEmail(email, verificationCode) {
   // Create a nodemailer transporter
   const transporter = nodemailer.createTransport({
     // Set up your email service configuration
     // For example, using Gmail SMTP:
-    service: 'Gmail',
+    service: "Gmail",
     auth: {
-      user: 'omartaamallah4@gmail.com',
-      pass: 'xulr xaza rvyd heis'
-    }
+      user: "omartaamallah4@gmail.com",
+      pass: "xulr xaza rvyd heis",
+    },
   });
 
   // Configure the email options
   const mailOptions = {
-    from: 'omartaamallah4@gmail.com',
+    from: "omartaamallah4@gmail.com",
     to: email,
-    subject: 'Verification Code',
-    text: `Your verification code is: ${verificationCode}`
+    subject: "Verification Code",
+    text: `Your verification code is: ${verificationCode}`,
   };
 
   // Send the email
@@ -137,9 +110,24 @@ export function sendEmail(email, verificationCode) {
     }
   });
 }
+//send verification code
+export async function sendVerificationCode(req, res) {
+  try {
+    // Generate verification code
+    const verificationCode = generateVerificationCode();
 
-// Créer un nouvel utilisateur
+    // Send verification code by email
+    await sendEmail(req.body.email, verificationCode);
 
+    // Return success response
+    res.json({ success: true });
+  } catch (error) {
+    // Return error response
+    res.status(500).json({ error: "Failed to send verification code." });
+  }
+}
+
+// Sign Up
 export function createUser(req, res) {
   const userData = req.body;
   const password = userData.password;
@@ -168,23 +156,23 @@ export function createUser(req, res) {
       // Set the verification code in the user object
       user.verificationCode = verificationCode;
 
-      user.save()
-        .then(newUser => {
+      user
+        .save()
+        .then((newUser) => {
           // Send verification code email
           sendEmail(user.email, verificationCode);
 
           // Send the response
           res.status(201).json(newUser);
         })
-        .catch(err => {
+        .catch((err) => {
           res.status(500).json({ error: err });
         });
     });
   });
 }
 
-
-// Lire tous les utilisateurs
+// get all users
 export function getUsers(req, res) {
   User.find()
     .then((users) => {
@@ -193,9 +181,29 @@ export function getUsers(req, res) {
     .catch((error) => {
       res.status(500).json({ error: error });
     });
-};
+}
 
-// Obtenir un utilisateur par son ID
+// Middleware for token authorization
+export function authenticateToken(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(" ")[1]; // Extract the token from the Authorization header
+
+  if (token == null) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
+
+  jwt.verify(token, "yourSecretKey", (err, user) => {
+    if (err) {
+      return res.status(403).json({ error: "Invalid token" });
+    }
+
+    // Token is valid, set the user on the request object
+    req.user = user;
+    next(); // Proceed to the next middleware or route handler
+  });
+}
+
+// get user by id
 export function getUserById(req, res) {
   const userId = req.params.id;
 
@@ -204,15 +212,15 @@ export function getUserById(req, res) {
       if (user) {
         res.status(200).json(user);
       } else {
-        res.status(404).json({ error: 'Utilisateur non trouvé' });
+        res.status(404).json({ error: "Utilisateur non trouvé" });
       }
     })
     .catch((error) => {
       res.status(500).json({ error: error });
     });
-};
+}
 
-// Mettre à jour un utilisateur
+// update user
 export async function updateUser(req, res) {
   try {
     const userId = req.params.id;
@@ -221,7 +229,7 @@ export async function updateUser(req, res) {
     const user = await User.findById(userId); // Find the user by ID
 
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: "User not found" });
     }
 
     // Check if the password is being updated
@@ -245,7 +253,8 @@ export async function updateUser(req, res) {
     user.age = updatedData.age || user.age;
     user.address = updatedData.address || user.address;
     user.verified = updatedData.verified || user.verified;
-    user.verificationCode = updatedData.verificationCode || user.verificationCode;
+    user.verificationCode =
+      updatedData.verificationCode || user.verificationCode;
     user.role = updatedData.role || user.role;
 
     await user.save(); // Save the updated user
@@ -254,41 +263,40 @@ export async function updateUser(req, res) {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-};
+}
 
-// Supprimer un utilisateur
+// delete user by id
 export function deleteUser(req, res) {
   const userId = req.params.id;
 
   User.findByIdAndDelete(userId)
     .then((user) => {
       if (user) {
-        res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
+        res.status(200).json({ message: "Utilisateur supprimé avec succès" });
       } else {
-        res.status(404).json({ error: 'Utilisateur non trouvé' });
+        res.status(404).json({ error: "Utilisateur non trouvé" });
       }
     })
     .catch((error) => {
       res.status(500).json({ error: error });
     });
-};
-// Function to display users with the role 'admin'
+}
+// get all users with admin role
 export async function displayAdminUsers() {
   try {
-    const adminUsers = await User.find({ role: 'admin' });
+    const adminUsers = await User.find({ role: "admin" });
     console.log(adminUsers);
   } catch (error) {
     console.error(error);
   }
 }
 
-// Function to display users with the role 'user'
+// get users with user role
 export async function displayRegularUsers() {
   try {
-    const regularUsers = await User.find({ role: 'user' });
+    const regularUsers = await User.find({ role: "user" });
     console.log(regularUsers);
   } catch (error) {
     console.error(error);
   }
 }
-
