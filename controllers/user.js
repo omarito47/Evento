@@ -293,6 +293,7 @@ export async function updateUser(req, res) {
     user.verified = updatedData.verified || user.verified;
     user.verificationCode = updatedData.verificationCode || user.verificationCode;
     user.role = updatedData.role || user.role;
+    user.phoneNumber=updatedData.phoneNumber || user.phoneNumber;
 
     await user.save(); // Save the updated user
 
