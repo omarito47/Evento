@@ -27,8 +27,9 @@ export function getOnce(req, res) {
 }
 
 
+
 export function addOnce(req, res) {
-    const { dateDebut, dateFin, idSalle, email } = req.body;
+    const { dateDebut, dateFin, idSalle, email, idUser } = req.body;
 
     // Vérifier que la date de début est avant la date de fin ou égale si c'est une réservation d'une journée
     if (new Date(dateDebut) > new Date(dateFin)) {
@@ -37,7 +38,6 @@ export function addOnce(req, res) {
 
     let nouvelleReservation;
     let salle;
-    let userId; // Déclaration de la variable userId
 
     Salle.findById(idSalle)
         .then(salleData => {
@@ -69,7 +69,11 @@ export function addOnce(req, res) {
             if (!user) {
                 throw new Error('Utilisateur non trouvé');
             }
-            userId = user._id; // Assigner l'ID de l'utilisateur à userId
+
+            // Vérifier que l'idUser correspond bien à l'utilisateur trouvé
+            if (user._id.toString() !== idUser) {
+                throw new Error('L\'id de l\'utilisateur ne correspond pas à l\'email fourni');
+            }
 
             // Calcul du tarif
             const tarif = calculerTarif(dateDebut, dateFin, salle.prix);
@@ -80,7 +84,7 @@ export function addOnce(req, res) {
                 dateFin: new Date(dateFin),
                 tarif,
                 idSalle: idSalle,
-                idUser: userId, // Utiliser l'ID de l'utilisateur
+                idUser: user._id, // Utiliser l'ID de l'utilisateur
                 email: email 
             });
         })
@@ -92,11 +96,11 @@ export function addOnce(req, res) {
         })
         .then(() => {
             // Mettre à jour le tableau de réservations de l'utilisateur
-            return User.findByIdAndUpdate(userId, { $push: { reservations: nouvelleReservation._id } });
+            return User.findByIdAndUpdate(idUser, { $push: { reservations: nouvelleReservation._id } });
         })
         .then(() => {
             // Envoi de l'e-mail de confirmation à l'adresse e-mail fournie par le client
-            sendConfirmationEmail(email, nouvelleReservation, userId);
+            sendConfirmationEmail(email, nouvelleReservation, idUser);
 
             res.status(200).json({ newReservation: nouvelleReservation, message: 'Réservation ajoutée avec succès' });
         })
@@ -104,9 +108,92 @@ export function addOnce(req, res) {
             res.status(500).json({ error: err.message });
         });
 }
+//w hedhi zeda temchi fel front mel id yjib mail 
+// export function addOnce(req, res) {
+//     const { dateDebut, dateFin, idSalle, idUser } = req.body;
 
+//     // Vérifier que la date de début est avant la date de fin ou égale si c'est une réservation d'une journée
+//     if (new Date(dateDebut) > new Date(dateFin)) {
+//         return res.status(400).json({ error: "La date de début doit être avant la date de fin" });
+//     }
 
+//     let nouvelleReservation;
+//     let salle;
+//     let email;
 
+//     Salle.findById(idSalle)
+//         .then(salleData => {
+//             if (!salleData) {
+//                 throw new Error('Salle non trouvée');
+//             }
+
+//             salle = salleData;
+
+//             // Vérifier les chevauchements de réservations pour la salle spécifiée
+//             return ReservationSalle.find({
+//                 idSalle: idSalle,
+//                 $or: [
+//                     {
+//                         dateDebut: { $lt: new Date(dateFin) },
+//                         dateFin: { $gt: new Date(dateDebut) }
+//                     }
+//                 ]
+//             });
+//         })
+//         .then(chevauchements => {
+//             if (chevauchements.length > 0) {
+//                 throw new Error('La salle est déjà réservée pour cette période');
+//             }
+
+//             // Trouver l'utilisateur par idUser
+//             return User.findById(idUser);
+//         })
+//         .then(user => {
+//             if (!user) {
+//                 throw new Error('Utilisateur non trouvé');
+//             }
+
+//             // Vérifier que l'idUser correspond bien à l'utilisateur trouvé
+//             if (user._id.toString() !== idUser) {
+//                 throw new Error("L'id de l'utilisateur ne correspond pas à l'idUser fourni");
+//             }
+
+//             // Récupérer l'email de l'utilisateur
+//             email = user.email.toLowerCase();
+
+//             // Calcul du tarif
+//             const tarif = calculerTarif(dateDebut, dateFin, salle.prix);
+
+//             // Créer la réservation
+//             return ReservationSalle.create({
+//                 dateDebut: new Date(dateDebut),
+//                 dateFin: new Date(dateFin),
+//                 tarif,
+//                 idSalle: idSalle,
+//                 idUser: user._id, // Utiliser l'ID de l'utilisateur
+//                 email: email 
+//             });
+//         })
+//         .then(newReservation => {
+//             nouvelleReservation = newReservation;
+
+//             // Mettre à jour le tableau de réservations de la salle
+//             return Salle.findByIdAndUpdate(idSalle, { $push: { reservations: newReservation._id } });
+//         })
+//         .then(() => {
+//             // Mettre à jour le tableau de réservations de l'utilisateur
+//             return User.findByIdAndUpdate(idUser, { $push: { reservations: nouvelleReservation._id } });
+//         })
+//         .then(() => {
+//             // Envoi de l'e-mail de confirmation à l'adresse e-mail fournie par le client
+//             sendConfirmationEmail(email, nouvelleReservation, idUser);
+
+//             res.status(200).json({ newReservation: nouvelleReservation, message: 'Réservation ajoutée avec succès' });
+//         })
+//         .catch(err => {
+//             res.status(500).json({ error: err.message });
+//         });
+// }
 /**
  * Mettre à jour un seul document
  */export function putOnce(req, res) {
@@ -254,7 +341,88 @@ export function addOnce(req, res) {
         .catch(err => {
             res.status(500).json({ error: err.message });
         });
-}
+}  
+//hedhi eli fiha email iji automatiquement matemchich fel front
+// export function addOnce(req, res) {
+//     const { dateDebut, dateFin, idSalle, idUser } = req.body;
+
+//     // Vérifier que la date de début est avant la date de fin ou égale si c'est une réservation d'une journée
+//     if (new Date(dateDebut) > new Date(dateFin)) {
+//         return res.status(400).json({ error: "La date de début doit être avant la date de fin" });
+//     }
+
+//     let nouvelleReservation;
+//     let salle;
+//     let user;
+
+//     Salle.findById(idSalle)
+//         .then(salleData => {
+//             if (!salleData) {
+//                 throw new Error('Salle non trouvée');
+//             }
+
+//             salle = salleData;
+
+//             // Vérifier les chevauchements de réservations pour la salle spécifiée
+//             return ReservationSalle.find({
+//                 idSalle: idSalle,
+//                 $or: [
+//                     { dateDebut: { $lt: new Date(dateFin), $gte: new Date(dateDebut) } }, // Date de début avant fin et après ou égale à début
+//                     { dateFin: { $gt: new Date(dateDebut), $lte: new Date(dateFin) } }, // Date de fin après début et avant ou égale à fin
+//                     { dateDebut: new Date(dateDebut), dateFin: new Date(dateFin) } // Date de début et de fin exactement égales à début et fin
+//                 ]
+//             });
+//         })
+//         .then(chevauchements => {
+//             if (chevauchements.length > 0) {
+//                 throw new Error('La salle est déjà réservée pour cette période');
+//             }
+
+//             // Trouver l'utilisateur par ID
+//             return User.findById(idUser);
+//         })
+//         .then(userData => {
+//             if (!userData) {
+//                 throw new Error('Utilisateur non trouvé');
+//             }
+
+//             user = userData;
+
+//             // Calcul du tarif
+//             const tarif = calculerTarif(dateDebut, dateFin, salle.prix);
+
+//             // Créer la réservation
+//             return ReservationSalle.create({
+//                 dateDebut: new Date(dateDebut),
+//                 dateFin: new Date(dateFin),
+//                 tarif,
+//                 idSalle: idSalle,
+//                 idUser: user._id, // Utiliser l'ID de l'utilisateur
+//                 email: user.email // Utiliser l'email de l'utilisateur
+//             });
+//         })
+//         .then(newReservation => {
+//             nouvelleReservation = newReservation;
+
+//             // Mettre à jour le tableau de réservations de la salle
+//             return Salle.findByIdAndUpdate(idSalle, { $push: { reservations: newReservation._id } });
+//         })
+//         .then(() => {
+//             // Mettre à jour le tableau de réservations de l'utilisateur
+//             return User.findByIdAndUpdate(idUser, { $push: { reservations: nouvelleReservation._id } });
+//         })
+//         .then(() => {
+//             // Envoi de l'e-mail de confirmation à l'adresse e-mail de l'utilisateur
+//             sendConfirmationEmail(user.email, nouvelleReservation, idUser);
+
+//             res.status(200).json({ newReservation: nouvelleReservation, message: 'Réservation ajoutée avec succès' });
+//         })
+//         .catch(err => {
+//             res.status(500).json({ error: err.message });
+//         });
+// }
+
+
 
 
 export function deleteOnce(req, res) {

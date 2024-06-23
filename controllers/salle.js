@@ -24,7 +24,7 @@ export function addOnce(req, res) {
         description:req.body.description,
         lieu:req.body.lieu,
         prix:req.body.prix,
-        image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`,
+        image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`, //${req.file.filename}
         typeSalle:req.body.typeSalle
  
     })
@@ -35,6 +35,8 @@ export function addOnce(req, res) {
         res.status(500).json({ error: err });
     });
 }
+
+  
 
 
 

@@ -1,6 +1,7 @@
 import User from '../models/user.js';
 import ReservationSalle from '../models/reservationSalle.js';
 import Rating from '../models/Rating.js';
+import Salle from '../models/salle.js';
 
 //sign in methode 
 export function signin(req, res) {
@@ -93,28 +94,80 @@ export function updateUser  (req, res)  {
 };
 
 // Supprimer un utilisateur
-export function deleteUser (req, res)  {
+// export function deleteUser (req, res)  {
+//   const userId = req.params.id;
+
+//   User.findByIdAndDelete(userId)
+//     .then((user) => {
+//       if (user) {
+//        return res.status(404).json({ error: 'Utilisateur non trouvé' });
+//       }
+//  // Supprimer les réservations associées
+//  return ReservationSalle.deleteMany({ idUser: userId })
+//  .then(() => {
+//    // Supprimer les évaluations associées
+//    return Rating.deleteMany({ idUser: userId });
+//  })
+//  .then(() => {
+//    res.status(200).json({ message: 'Utilisateur, ses réservations et évaluations supprimés avec succès' });
+//  });
+// })
+// .catch((error) => {
+// res.status(500).json({ error: error.message });
+// });
+// }
+export function deleteUser(req, res) {
   const userId = req.params.id;
 
   User.findByIdAndDelete(userId)
-    .then((user) => {
-      if (user) {
-       return res.status(404).json({ error: 'Utilisateur non trouvé' });
-      }
- // Supprimer les réservations associées
- return ReservationSalle.deleteMany({ idUser: userId })
- .then(() => {
-   // Supprimer les évaluations associées
-   return Rating.deleteMany({ idUser: userId });
- })
- .then(() => {
-   res.status(200).json({ message: 'Utilisateur, ses réservations et évaluations supprimés avec succès' });
- });
-})
-.catch((error) => {
-res.status(500).json({ error: error.message });
-});
+      .then((user) => {
+          if (!user) {
+              return res.status(404).json({ error: 'Utilisateur non trouvé' });
+          }
+
+          // Supprimer les réservations associées
+          return ReservationSalle.find({ idUser: userId })
+              .then((reservations) => {
+                  const reservationIds = reservations.map(r => r._id);
+                  return ReservationSalle.deleteMany({ idUser: userId })
+                      .then(() => {
+                          // Mettre à jour les documents Salle pour enlever les références aux réservations supprimées
+                          const salleUpdatePromises = reservations.map(reservation => {
+                              return Salle.updateOne(
+                                  { reservations: reservation._id },
+                                  { $pull: { reservations: reservation._id } }
+                              );
+                          });
+                          return Promise.all(salleUpdatePromises);
+                      });
+              })
+              .then(() => {
+                  // Supprimer les évaluations associées
+                  return Rating.find({ idUser: userId })
+                      .then((ratings) => {
+                          const ratingIds = ratings.map(r => r._id);
+                          return Rating.deleteMany({ idUser: userId })
+                              .then(() => {
+                                  // Mettre à jour les documents Salle pour enlever les références aux évaluations supprimées
+                                  const salleUpdatePromises = ratings.map(rating => {
+                                      return Salle.updateOne(
+                                          { ratings: rating._id },
+                                          { $pull: { ratings: rating._id } }
+                                      );
+                                  });
+                                  return Promise.all(salleUpdatePromises);
+                              });
+                      });
+              })
+              .then(() => {
+                  res.status(200).json({ message: 'Utilisateur, ses réservations et évaluations supprimés avec succès' });
+              });
+      })
+      .catch((error) => {
+          res.status(500).json({ error: error.message });
+      });
 }
+
 
 // Function to display users with the role 'admin'
 export async function displayAdminUsers() {
