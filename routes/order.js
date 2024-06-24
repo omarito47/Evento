@@ -9,6 +9,7 @@ import {
   payForOrder,
   getAllOrders,
   trackOrderById,
+  getOrderById,
 } from "../controllers/order.js";
 
 const router = Router();
@@ -18,6 +19,7 @@ router.post("/", createOrder);
 
 router.get("/newOrderForCurrentUser", getNewOrderForCurrentUser);
 router.get("/", getAllOrders);
+router.get("/:id", getOrderById);
 router.put("/:id", updateOrder);
 router.put("/cancel/:id", cancelOrder);
 

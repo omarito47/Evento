@@ -11,6 +11,7 @@ import routeProduct from "./routes/productRoute.js";
 import routerOrder from "./routes/order.js";
 import userRoutes from "./routes/user.js";
 import cartRoutes from "./routes/cartRoute.js";
+import paymentRoutes from "./routes/paymentRoute.js";
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -34,6 +35,7 @@ app.use("/products", routeProduct);
 app.use("/orders", routerOrder);
 app.use("/user", userRoutes);
 app.use("/cart", cartRoutes);
+app.use("/payment", paymentRoutes);
 
 // Error handling middleware
 app.all("*", (req, res, next) => {

@@ -1,8 +1,15 @@
 import asyncHandler from "express-async-handler";
+import Stripe from "stripe";
+
 import { OrderStatus } from "../utils/orderStatus.js";
 import { OrderModel } from "../models/order.js";
 import ProductModel from "../models/productModel.js";
 import { updateProduct } from "./productControllers.js";
+
+// Initialize Stripe with your secret key
+const stripe = new Stripe(
+  "sk_test_51PUz5g06xt7Y6U6ADToVCjyllUbfEwfn8lTAdjovI6BhaKOHPsTOmXXDBw8QV9XYdx4D13B1GeNCZ5dCtZhDkCIb00ebyn7eBX"
+);
 
 const updateProductQuantity = async (items) => {
   const updateAllItems = async () => {
@@ -45,6 +52,18 @@ const calcTotalCartPrice = async (items) => {
   return await calculate();
 };
 
+export const getOrderById = asyncHandler(async (req, res, next) => {
+  const { id } = req.params;
+  let query = OrderModel.findById(id);
+
+  const document = await query;
+
+  if (!document) {
+    return next(new ApiError(`No document for this id ${id}`, 404));
+  }
+  res.status(200).json({ data: document });
+});
+
 export const createOrder = asyncHandler(async (req, res) => {
   const requestOrder = req.body;
   try {
@@ -80,15 +99,20 @@ export const updateOrder = async (req, res) => {
   const updateFields = req.body;
 
   try {
+    const totalPrice = await calcTotalCartPrice(requestOrder.items);
+
     // Find the order by ID and update it
     const updatedOrder = await OrderModel.findByIdAndUpdate(
       orderId,
+      totalPrice,
       updateFields,
       {
         new: true, // Return the updated document
         runValidators: true, // Run Mongoose validators
       }
     );
+
+    await updateProductQuantity(requestOrder.items);
 
     if (!updatedOrder) {
       return res.status(404).json({ error: "Order not found" });
@@ -177,3 +201,23 @@ export const trackOrderById = asyncHandler(async (req, res) => {
   const order = await OrderModel.findById(req.params.id);
   res.send(order);
 });
+
+export const processPayment = async (req, res) => {
+  const { paymentMethodId, total } = req.body;
+
+  try {
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: total * 100, // Amount in cents
+      currency: "usd",
+      payment_method: paymentMethodId,
+      confirmation_method: "manual",
+      confirm: true,
+      payment_method_types: ["card"], // Adjust as per your integration
+      return_url: "http://localhost:4200/nav2/payment/success", // Specify your success URL
+    });
+
+    res.send({ paymentIntent });
+  } catch (error) {
+    res.status(400).send({ error: error.message });
+  }
+};

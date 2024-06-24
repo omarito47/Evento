@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export default class ApiFeatures {
   constructor(mongooseQuery, queryString) {
     this.mongooseQuery = mongooseQuery;
@@ -5,15 +7,49 @@ export default class ApiFeatures {
   }
 
   filter() {
-    const queryStringObj = { ...this.queryString };
+    let queryStringObj = { ...this.queryString };
     const excludesFields = ["page", "sort", "limit", "fields"];
+    console.log("queryStringObj.category", queryStringObj.category);
     excludesFields.forEach((field) => delete queryStringObj[field]);
 
     // Apply filtration using [gte, gt, lte, lt]
-    let queryStr = JSON.stringify(queryStringObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // let queryStr = JSON.stringify(queryStringObj);
+    // queryStr = queryStr.replace(
+    //   /\b(gte|gt|lte|lt|eq)\b/g,
+    //   (match) => `$${match}`
+    // );
+    // Check if the category field is present and is an array or string for name filtering
+    // if (queryStringObj.category) {
+    //   const categoryNameFilter = queryStringObj.category;
+    //   delete queryStringObj.category;
+    //   console.log("categoryNameFilter", categoryNameFilter);
+    //   this.mongooseQuery = this.mongooseQuery.populate({
+    //     path: "category",
+    //     match: {
+    //       name: Array.isArray(categoryNameFilter)
+    //         ? { $in: categoryNameFilter }
+    //         : categoryNameFilter,
+    //     },
+    //   });
+    // }
+    // Apply other filtration using [gte, gt, lte, lt, eq]
+    for (let key in queryStringObj) {
+      if (Array.isArray(queryStringObj[key])) {
+        queryStringObj[key] = { $in: queryStringObj[key] };
+      } else if (
+        typeof queryStringObj[key] === "object" &&
+        !Array.isArray(queryStringObj[key])
+      ) {
+        for (let operator in queryStringObj[key]) {
+          queryStringObj[key][`$${operator}`] = queryStringObj[key][operator];
+          delete queryStringObj[key][operator];
+        }
+      } else {
+        queryStringObj[key] = { $eq: queryStringObj[key] };
+      }
+    }
 
-    this.mongooseQuery = this.mongooseQuery.find(JSON.parse(queryStr));
+    this.mongooseQuery = this.mongooseQuery.find(queryStringObj);
 
     return this;
   }
