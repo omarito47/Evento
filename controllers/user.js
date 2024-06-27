@@ -3,7 +3,6 @@ import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 
-//sign in methode
 export function signIn(req, res) {
   const { email, password } = req.body;
 
@@ -33,7 +32,14 @@ export function signIn(req, res) {
           user.token = token;
           user.save();
 
-          return res.status(200).json({ email: user.email, token: token });
+          return res
+            .status(200)
+            .json({
+              userId: user._id,
+              email: user.email,
+              token: token,
+              role: user.role,
+            });
         } else {
           // Passwords do not match, authentication failed
           return res.status(401).json({ error: "Authentication failed" });
@@ -111,13 +117,27 @@ export function sendEmail(email, verificationCode) {
   });
 }
 //send verification code
+// send verification code
 export async function sendVerificationCode(req, res) {
   try {
+    const { email } = req.body;
+
     // Generate verification code
     const verificationCode = generateVerificationCode();
 
+    // Update the verification code in the user's document
+    const user = await User.findOneAndUpdate(
+      { email },
+      { verificationCode },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
     // Send verification code by email
-    await sendEmail(req.body.email, verificationCode);
+    await sendEmail(email, verificationCode);
 
     // Return success response
     res.json({ success: true });
@@ -219,6 +239,32 @@ export function getUserById(req, res) {
       res.status(500).json({ error: error });
     });
 }
+//get user by email
+export async function getUserByEmail(req, res) {
+  try {
+    const { email } = req.params;
+    const user = await getUserByhisEmail(email);
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: "User not found" });
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+//second way work correctly
+export async function getUserByhisEmail(email) {
+  try {
+    const user = await User.findOne({ email });
+    return user;
+  } catch (error) {
+    console.error("Error retrieving user:", error);
+    throw error;
+  }
+}
 
 // update user
 export async function updateUser(req, res) {
@@ -256,6 +302,7 @@ export async function updateUser(req, res) {
     user.verificationCode =
       updatedData.verificationCode || user.verificationCode;
     user.role = updatedData.role || user.role;
+    user.phoneNumber = updatedData.phoneNumber || user.phoneNumber;
 
     await user.save(); // Save the updated user
 
