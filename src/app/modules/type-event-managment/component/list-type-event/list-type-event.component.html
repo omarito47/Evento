@@ -1,0 +1,60 @@
+<!-- 
+
+
+<div class="div-main">
+  <div class="title-page">
+    <h2>Liste des types évenements</h2>
+
+  </div>
+  <div class="container">
+    <h2>Type Evenement List</h2>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Libele</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let typeEvenement of typeEvenements">
+          <td>{{ typeEvenement.name }}</td>
+          <td>{{ typeEvenement.libele }}</td>
+          <td>
+            <button class="btn btn-primary" [routerLink]="['/typeEvenement/edit', typeEvenement._id]">Edit</button>
+            <button class="btn btn-danger" (click)="deleteTypeEvenement(typeEvenement._id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div> -->
+
+<div class="div-main">
+  <div class="title-page">
+    <h2>Liste des types évenements</h2>
+  </div>
+  <div class="container">
+    <h2>Type Evenement List</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Libele</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let typeEvenement of typeEvenements">
+          <td>{{ typeEvenement.name }}</td>
+          <td>{{ typeEvenement.libele }}</td>
+          <td>
+            <button class="btn btn-primary" [routerLink]="['/typeEvenement/edit', typeEvenement._id]">Edit</button>
+            <button class="btn btn-danger" (click)="deleteTypeEvenement(typeEvenement._id)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

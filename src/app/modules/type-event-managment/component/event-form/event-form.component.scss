@@ -1,0 +1,97 @@
+.div-main {
+    padding: 2rem;
+    background: linear-gradient(to right, #f3f8ff, #d9e9ff);
+    border-radius: 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  }
+  
+  .title-page {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .title-page h2 {
+    font-size: 2rem;
+    color: #467fff;
+    margin: 0;
+    transition: color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .title-page h2:hover {
+    color: #2f5fb3;
+    transform: scale(1.05);
+  }
+  
+  .form-container {
+    background: linear-gradient(to bottom, #ffffff, #e9f0ff);
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .form-container:hover {
+    transform: translateY(-0.3rem);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    font-weight: bold;
+    color: #2f5fb3;
+    margin-bottom: 0.5rem;
+  }
+  
+  .animated-input {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #b8c6e2;
+    border-radius: 0.3rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .animated-input:focus {
+    border-color: #467fff;
+    box-shadow: 0 0 8px rgba(70, 127, 255, 0.5);
+    outline: none;
+  }
+  
+  .animated-button {
+    background-color: #467fff;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.3rem;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .animated-button:hover {
+    background-color: #375ab9;
+    transform: translateY(-0.3rem);
+  }
+  
+  .animated-button:active {
+    background-color: #2a448c;
+    transform: translateY(0);
+  }
+  
+  /* Additional Styling for Overall Visual Appeal */
+  body {
+    background: linear-gradient(to right, #f3f8ff, #e1efff);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .container {
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  input, button {
+    font-family: inherit;
+  }
+  
