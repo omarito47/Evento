@@ -1,0 +1,51 @@
+<div class="div-main">
+  <div class="title-page">
+    <h2>Liste des évenemtns</h2>
+  </div>
+  <div class="container">
+    <h2>Evenement List</h2>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Date Debut</th>
+          <th>Date Fin</th>
+          <th>Heure</th>
+          <th>Lieu</th>
+          <th>Price Ticket</th>
+          <th>Nombre Participant</th>
+          <th>Type Event</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let evenement of evenements">
+          <td>{{ evenement.name }}</td>
+          <td>{{ evenement.description }}</td>
+          <td>{{ evenement.DateDebut | date }}</td>
+          <td>{{ evenement.DateFin | date }}</td>
+          <td>{{ evenement.heure }}</td>
+          <td>{{ evenement.lieu }}</td>
+          <td>{{ evenement.PriceTicket }}</td>
+          <td>{{ evenement.nombreParticipant }}</td>
+          <td>{{ evenement.typeEvent.name }}</td>
+          <td>
+            <button
+              class="btn btn-primary"
+              [routerLink]="['/evenement/edit', evenement._id]"
+            >
+              Edit
+            </button>
+            <button
+              class="btn btn-danger"
+              (click)="deleteEvenement(evenement._id)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

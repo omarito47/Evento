@@ -1,0 +1,33 @@
+<!-- <div class="div-main">
+  <div class="container">
+    <h2>Les Evenements</h2>
+    <div class="row">
+      <div class="card col-md-4" *ngFor="let i of events">
+
+        <div class="card-body">
+          <h2 class="card-title">{{i.name}}</h2>
+          <p class="card-text">{{i.description}}.</p>
+          <p>{{i.DateDebut | date : "yyyy-MM-dd"}} - {{i.DateFin | date : "yyyy-MM-dd"}} , Heure : {{i.heure}}H</p>
+          <a (click)="reserver(i._id)" class="btn btn-primary">Reserver</a>
+        </div>
+      </div>
+     </div>
+  </div>
+
+
+</div> -->
+<div class="div-main">
+  <div class="container">
+    <h2>Les Evenements</h2>
+    <div class="row">
+      <div class="card col-md-4" *ngFor="let event of events">
+        <div class="card-body">
+          <h2 class="card-title">{{ event.name }}</h2>
+          <p class="card-text">{{ event.description }}</p>
+          <p>{{ event.DateDebut | date : "yyyy-MM-dd" }} - {{ event.DateFin | date : "yyyy-MM-dd" }}, Heure : {{ event.heure }}H</p>
+          <a (click)="reserver(event._id)" class="btn btn-primary">Reserver</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

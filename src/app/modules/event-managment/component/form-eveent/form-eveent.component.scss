@@ -1,0 +1,61 @@
+.div-main .title-page {
+    text-align: center;
+    padding: 50px 0; /* Augmentation de l'espace autour du titre */
+    background-color: #467fff;
+    color: #fff;
+  }
+  
+  .div-main .container {
+    padding: 30px; /* Réduction du padding pour les autres contenus */
+  }
+  
+  .div-main .container h2 {
+    margin-bottom: 20px; /* Réduction de l'espace sous les titres */
+    font-size: 1.5rem; /* Réduction de la taille du texte des titres */
+    color: #467fff;
+  }
+  
+  .div-main .container form .form-group {
+    margin-bottom: 15px; /* Réduction de l'espace entre les groupes de formulaire */
+  }
+  
+  .div-main .container form label {
+    color: #467fff;
+    font-weight: bold;
+    font-size: 0.9rem; /* Réduction de la taille du texte des labels */
+  }
+  
+  .div-main .container form input.form-control,
+  .div-main .container form select.form-control,
+  .div-main .container form textarea.form-control {
+    width: 100%;
+    padding: 8px; /* Réduction de la taille du padding */
+    font-size: 0.9rem; /* Réduction de la taille du texte des champs de formulaire */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+  }
+  
+  .div-main .container form input.form-control:focus,
+  .div-main .container form select.form-control:focus,
+  .div-main .container form textarea.form-control:focus {
+    outline: none;
+    border-color: #467fff;
+  }
+  
+  .div-main .container form button.btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem; /* Taille du texte du bouton inchangée */
+    background-color: #467fff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .div-main .container form button.btn:hover {
+    background-color: #466aff;
+  }
+  
