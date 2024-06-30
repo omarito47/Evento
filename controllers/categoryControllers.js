@@ -43,38 +43,54 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
   console.log("Request Params:", req.params.id);
   console.log("Request Body:", req.body);
 
-  const document = await CategoryModel.findByIdAndUpdate(
-    req.params.id,
-    {
+  try {
+    const document = await CategoryModel.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        image: req.file
+          ? `${req.protocol}://${req.get("host")}/img/${req.file.filename}`
+          : undefined,
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    if (!document) {
+      return next(
+        new ApiError(`No document for this id ${req.params.id}`, 404)
+      );
+    }
+
+    console.log("Updated Document:", document);
+
+    res.status(200).json({ data: document });
+  } catch (error) {
+    if (error.code === 11000) {
+      return next(new ApiError("Category name must be unique.", 400));
+    }
+    next(error);
+  }
+});
+
+export const createCategory = asyncHandler(async (req, res, next) => {
+  try {
+    const newDoc = await CategoryModel.create({
       ...req.body,
       image: req.file
         ? `${req.protocol}://${req.get("host")}/img/${req.file.filename}`
         : undefined,
-    },
-    {
-      new: true,
+    });
+    console.log("req", req.file);
+    res.status(201).json({ data: newDoc });
+  } catch (error) {
+    if (error.code === 11000) {
+      return next(new ApiError("Category name must be unique.", 400));
     }
-  );
-
-  if (!document) {
-    return next(new ApiError(`No document for this id ${req.params.id}`, 404));
+    next(error);
   }
-
-  console.log("Updated Document:", document);
-
-  document.save();
-  res.status(200).json({ data: document });
-});
-
-export const createCategory = asyncHandler(async (req, res) => {
-  const newDoc = await CategoryModel.create({
-    ...req.body,
-    image: req.file
-      ? `${req.protocol}://${req.get("host")}/img/${req.file.filename}`
-      : undefined,
-  });
-  console.log("req", req.file);
-  res.status(201).json({ data: newDoc });
 });
 
 export const getCategory = asyncHandler(async (req, res, next) => {

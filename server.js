@@ -14,7 +14,7 @@ import cartRoutes from "./routes/cartRoute.js";
 import paymentRoutes from "./routes/paymentRoute.js";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 9090;
 
 // Load environment variables
 dotenv.config({ path: "config.env" });

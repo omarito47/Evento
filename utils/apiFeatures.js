@@ -7,49 +7,31 @@ export default class ApiFeatures {
   }
 
   filter() {
-    let queryStringObj = { ...this.queryString };
-    const excludesFields = ["page", "sort", "limit", "fields"];
-    console.log("queryStringObj.category", queryStringObj.category);
-    excludesFields.forEach((field) => delete queryStringObj[field]);
+    const queryObj = { ...this.queryString };
+    const excludedFields = ["page", "sort", "limit", "fields", "keyword"];
 
-    // Apply filtration using [gte, gt, lte, lt]
-    // let queryStr = JSON.stringify(queryStringObj);
-    // queryStr = queryStr.replace(
-    //   /\b(gte|gt|lte|lt|eq)\b/g,
-    //   (match) => `$${match}`
-    // );
-    // Check if the category field is present and is an array or string for name filtering
-    // if (queryStringObj.category) {
-    //   const categoryNameFilter = queryStringObj.category;
-    //   delete queryStringObj.category;
-    //   console.log("categoryNameFilter", categoryNameFilter);
-    //   this.mongooseQuery = this.mongooseQuery.populate({
-    //     path: "category",
-    //     match: {
-    //       name: Array.isArray(categoryNameFilter)
-    //         ? { $in: categoryNameFilter }
-    //         : categoryNameFilter,
-    //     },
-    //   });
-    // }
-    // Apply other filtration using [gte, gt, lte, lt, eq]
-    for (let key in queryStringObj) {
-      if (Array.isArray(queryStringObj[key])) {
-        queryStringObj[key] = { $in: queryStringObj[key] };
+    // Remove excluded fields from query
+    excludedFields.forEach((field) => delete queryObj[field]);
+
+    // Convert values to MongoDB operators where needed
+    for (const key in queryObj) {
+      if (queryObj[key].startsWith("$")) continue; // Skip already transformed operators
+      if (Array.isArray(queryObj[key])) {
+        queryObj[key] = { $in: queryObj[key] };
       } else if (
-        typeof queryStringObj[key] === "object" &&
-        !Array.isArray(queryStringObj[key])
+        typeof queryObj[key] === "object" &&
+        !Array.isArray(queryObj[key])
       ) {
-        for (let operator in queryStringObj[key]) {
-          queryStringObj[key][`$${operator}`] = queryStringObj[key][operator];
-          delete queryStringObj[key][operator];
+        for (const operator in queryObj[key]) {
+          queryObj[key][`$${operator}`] = queryObj[key][operator];
+          delete queryObj[key][operator];
         }
       } else {
-        queryStringObj[key] = { $eq: queryStringObj[key] };
+        queryObj[key] = { $eq: queryObj[key] };
       }
     }
 
-    this.mongooseQuery = this.mongooseQuery.find(queryStringObj);
+    this.mongooseQuery = this.mongooseQuery.find(queryObj);
 
     return this;
   }
@@ -59,8 +41,9 @@ export default class ApiFeatures {
       const sortBy = this.queryString.sort.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.sort(sortBy);
     } else {
-      this.mongooseQuery = this.mongooseQuery.sort("-createdAt"); // Adjust to your actual createdAt field
+      this.mongooseQuery = this.mongooseQuery.sort("-createdAt"); // Default sort by createdAt
     }
+
     return this;
   }
 
@@ -69,8 +52,9 @@ export default class ApiFeatures {
       const fields = this.queryString.fields.split(",").join(" ");
       this.mongooseQuery = this.mongooseQuery.select(fields);
     } else {
-      this.mongooseQuery = this.mongooseQuery.select("-__v");
+      this.mongooseQuery = this.mongooseQuery.select("-__v"); // Exclude __v by default
     }
+
     return this;
   }
 
@@ -88,15 +72,20 @@ export default class ApiFeatures {
 
       this.mongooseQuery = this.mongooseQuery.find(query);
     }
+
     return this;
   }
 
   paginate() {
-    const page = parseInt(this.queryString.page) || 1; // Current page (default: 1)
-    const limit = parseInt(this.queryString.limit) || 10; // Products per page (default: 10)
-    const skip = (page - 1) * limit; // Items to skip for pagination
+    const page = parseInt(this.queryString.page, 10) || 1;
+    const limit = parseInt(this.queryString.limit, 10) || 10;
+    const skip = (page - 1) * limit;
 
     this.mongooseQuery = this.mongooseQuery.skip(skip).limit(limit);
+
+    // Count total documents without applying skip and limit
+    this.queryString.limit = limit; // Store limit for later use
+
     return this;
   }
 }
