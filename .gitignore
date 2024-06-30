@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 package-lock.json
 package.json
 node_modules
 server.js
+=======
+node_modules
+
+index.lock
+>>>>>>> b382891c91f2fc6e5eca622d69679f22cf37ba1a
