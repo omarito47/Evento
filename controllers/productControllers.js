@@ -22,7 +22,9 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     req.params.id,
     {
       ...req.body,
-      image: `${req.protocol}://${req.get("host")}/img/${req.file.filename}`,
+      image: req.file
+        ? `${req.protocol}://${req.get("host")}/img/${req.file.filename}`
+        : undefined,
     },
     {
       new: true,

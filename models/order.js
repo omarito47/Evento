@@ -38,6 +38,10 @@ const OrderSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    isAccepted: {
+      type: Boolean,
+      default: false,
+    },
     totalPrice: { type: Number, required: true },
     items: { type: [OrderItemSchema], required: true }, // Array of OrderItemSchema
     status: { type: String, default: OrderStatus.NEW },
