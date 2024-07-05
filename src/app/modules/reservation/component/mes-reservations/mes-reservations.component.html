@@ -1,0 +1,29 @@
+<div class="div-main">
+  <div class="container">
+    <h2>Mes reservation</h2>
+    <div class="row">
+      <table class="table">
+        <thead class="table-dark">
+          <tr>
+            <th>Date</th>
+            <th>Event</th>
+
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let i of reservations">
+            <td>{{i.createdAt | date : "yyyy/MM/dd HH:mm"}}</td>
+            <td>{{i.evenement_id.name}}</td>
+            <td>{{i.etat}}</td>
+
+            <td>
+              <button class="btn btn-danger" (click)="cancel(i._id)"> Cancel</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

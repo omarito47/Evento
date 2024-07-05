@@ -1,0 +1,109 @@
+/* Structure */
+.div-main {
+    padding: 2rem;
+    background-color: #f8f9fa; /* Couleur de fond de base */
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Pour cadrer l'arrière-plan animé */
+  }
+  
+  .title-page {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  
+  .title-page h2 {
+    font-size: 2rem;
+    color: #467fff;
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+  
+  .title-page h2:hover {
+    color: #466aff;
+  }
+  
+  .container {
+    background-color: #ffffff;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .table {
+    margin-top: 1rem;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.75rem;
+    text-align: left;
+    vertical-align: middle;
+  }
+  
+  .table th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+  }
+  
+  .table td {
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .animated-row {
+    transition: background-color 0.3s ease;
+  }
+  
+  .animated-row:hover {
+    background-color: #f0f8ff; /* Nouvelle couleur de fond au survol */
+  }
+  
+  .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .btn-primary {
+    background-color: #467fff;
+    border-color: #467fff;
+  }
+  
+  .btn-primary:hover {
+    background-color: #466aff;
+    border-color: #466aff;
+    transform: translateY(-3px);
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    border-color: #dc3545;
+  }
+  
+  .btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    transform: translateY(-3px);
+  }
+  
+  /* Animation de l'arrière-plan coloré */
+  
+  @keyframes backgroundAnimation {
+    0% {
+      background-color: #f8f9fa; /* Début de l'animation */
+    }
+    50% {
+      background-color: #d1ecf1; /* Couleur intermédiaire */
+    }
+    100% {
+      background-color: #f8f9fa; /* Retour à la couleur de départ */
+    }
+  }
+  
+  .div-main {
+    animation: backgroundAnimation 5s infinite alternate; /* Applique l'animation à div-main */
+  }
+  

@@ -1,3 +1,55 @@
+<<<<<<< HEAD
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# Compiled output
+/dist
+/tmp
+/out-tsc
+/bazel-out
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# IDEs and editors
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+# Miscellaneous
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+
+# System files
+.DS_Store
+Thumbs.db
+=======
+<<<<<<< HEAD
+package-lock.json
+package.json
+node_modules
+server.js
+=======
 node_modules
 
 index.lock
+>>>>>>> b382891c91f2fc6e5eca622d69679f22cf37ba1a
+>>>>>>> 04a1623bc06f8617bf22b3b1ffc3f9e655857576
